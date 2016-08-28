@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html ng-app="pictureApp">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
+
+<script src="../js/picture.js"></script>
+
+<script>
+  angular.module("MyApp", ["ui.bootstrap"]);
+</script>
+
+</head>
+<body ng-controller="keyController" ng-keyup="keyRelease($event)" ng-click="mouseClick($event)">
+  <div id="pictures" class="container" ng-controller="pictureController" ng-init="init('../resources/info/tmp/list/', '../resources/pic/tmp/', '../resources/folder/tmp/list')">
+    <div id="menu" class="row" ng-click="elimination($event)">
+      <a class="col-md-1" href="folder.html">folders</a><div class="col-md-1">tmp</div><a class="col-md-1" href="downloaded.html">downloaded</a> 
+    </div>
+    
+    <h1>current folder:{{curFolder}}</h1>
+    <div id="folders" class="row" style="height:50px;">
+      <div class="col-md-1" ng-repeat="folder in folderList"><span ng-click="showFolder(folder)">{{folder}}</span>&nbsp;</div> 
+    </div>
+    <form action="{{'../resources/folder/download_tmp/' + curFolder}}" method="POST" ng-click="elimination($event)">
+        <textarea name="urls" rows="10" cols="80"></textarea>
+        <input type="submit" value="download" />
+    </form>
+    <div id="picInfos">
+      <div class="col-md-2" style="height:180px;display:inline-block;" ng-repeat="info in infoList">
+        <a ng-click="showPicture($event, $index)">
+          <img src="../resources/thumb/tmp/{{info.fileId}}" />
+        </a>
+        <select>
+          <option>aaa</option>
+          <option>bbb</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
