@@ -26,8 +26,8 @@
       <div class="col-md-1" ng-repeat="folder in folderList"><span ng-click="showFolder(folder)">{{folder}}</span>&nbsp;</div> 
     </div>
     <form action="{{'../resources/folder/download_tmp/' + curFolder}}" method="POST" ng-click="elimination($event)">
-        <textarea name="urls" rows="10" cols="80"></textarea>
-        <input type="submit" value="download" />
+        <textarea name="urls" rows="10" cols="80" class="form-control"></textarea>
+        <input type="submit" class="btn btn-primary" value="download" />
     </form>
     <div id="picInfos">
       <div class="col-md-2" style="height:180px;display:inline-block;" ng-repeat="info in infoList">
