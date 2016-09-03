@@ -9,6 +9,11 @@ angular.module('pictureApp', [])
 		if ((folderListUrl != undefined) && (folderListUrl != null)) {
 			getFolders(folderListUrl);
 		}
+		scope.menuHeight = document.getElementById("menu-fix").clientHeight;
+		scope.contentsHeight = (window.innerHeight - scope.menuHeight) + "px";
+		angular.element(window).on('load resize', function() {
+			scope.contentsHeight = (window.innerHeight - scope.menuHeight) + "px";
+		});
 	};
 	
 	scope.showFolder = function(folder) {
@@ -86,6 +91,10 @@ angular.module('pictureApp', [])
 		var child = window.open("", "pic");
 		var width = child.innerWidth;
 		var height = child.innerHeight;
+		child.onfocus = function(event) {
+			child.blur();
+			this.focus();
+		}
 		
 		var url = scope.picBase + fileId + (((width == 0) || (height == 0)) ? "" : ("?width=" + width + "&height=" + height));
 		
