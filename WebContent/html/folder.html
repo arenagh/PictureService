@@ -15,21 +15,29 @@
 </script>
 
 </head>
-<body ng-controller="keyController" ng-keyup="keyRelease($event)" ng-click="mouseClick($event)">
+<body>
   <div id="pictures" class="container" ng-controller="pictureController" ng-init="init('../resources/info/list/', '../resources/pic/', '../resources/folder/list')">  
-    <div id="menu" class="row" ng-click="elimination($event)">
-      <div class="col-md-1">folders</div><a class="col-md-1" href="tmp.html">tmp</a><a class="col-md-1" href="downloaded.html">downloaded</a> 
-    </div>
+    <div id="menu-fix">
+      <div id="menu" class="row" ng-click="elimination($event)">
+        <div class="col-md-1">folders</div><a class="col-md-1" href="tmp.html">tmp</a><a class="col-md-1" href="downloaded.html">downloaded</a> 
+      </div>
   
-    <h1>current folder:{{curFolder}}</h1>
-    <div id="folders" class="row" style="height:50px;">
-      <div class="col-md-1" ng-repeat="folder in folderList"><span ng-click="showFolder(folder)">{{folder}}</span>&nbsp;</div> 
+      <h1>current folder:{{curFolder}}</h1>
+      <div id="nav-button" class="row" style="height:50px;">
+        <a href="#" class="btn btn-primary" ng-click="startPic()" >|&lt;-</a>
+        <a href="#" class="btn btn-primary" ng-click="prevPic()" >&lt;-</a>
+        <a href="#" class="btn btn-primary" ng-click="nextPic()" >-&gt;</a>
+        <a href="#" class="btn btn-primary" ng-click="endPic()" >-&gt;|</a>&nbsp;
+        <a href="#" class="btn btn-default" ng-click="showFolder(folder)" ng-repeat="folder in folderList">{{folder}}</a>
+      </div>
     </div>
-    <div id="picInfos">
-      <div class="col-md-2" style="height:180px;display:inline-block;" ng-repeat="info in infoList">
-        <a ng-click="showPicture($event, $index)">
-          <img src="../resources/thumb/{{info.fileId}}" />
-        </a>
+    <div id="picInfos" ng-style="{height:contentsHeight}">
+      <div style="overflow-y:auto;height:100%;">
+        <div class="col-md-2" style="height:180px;display:inline-block;" ng-repeat="info in infoList">
+          <a ng-click="showPicture($event, $index)">
+            <img src="../resources/thumb/{{info.fileId}}" />
+          </a>
+        </div>
       </div>
     </div>
   </div>

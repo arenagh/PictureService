@@ -43,7 +43,7 @@ public class FolderResource {
 	
 	@POST
 	@Path("download_tmp/{folder}")
-	public void downloadPictures(@PathParam("folder") String folder, @FormParam(value = "urls") String urlStr) throws IOException {
+	public void downloadPictures(@PathParam("folder") String folder, List<String> urlStrList) throws IOException {
 		
 		PictureRepository pRepository = PictureRepository.getTmpRepository();
 		PictureInfoRepository infoRepository = PictureInfoRepository.getTmpRepository();
@@ -51,7 +51,7 @@ public class FolderResource {
 		
 		synchronized (dRepository) {
 			dRepository.clear();
-			for (String urlLine : urlStr.split("\\s")) {
+			for (String urlLine : urlStrList) {
 				if (urlLine.length() <= 0) {
 					continue;
 				}
