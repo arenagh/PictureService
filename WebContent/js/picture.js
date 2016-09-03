@@ -14,8 +14,16 @@ angular.module('pictureApp', [])
 	scope.showFolder = function(folder) {
 		http.get(scope.infoListBase + folder).
 	    success(function(data, status, headers, config) {
+	    	data.forEach(function(element) {
+	    		if (element.created) {
+	    			element.created = new Date(element.created);
+	    		}
+	    		if (element.downloaded) {
+	    			element.downloaded = new Date(element.downloaded);
+	    		}
+	    	});
 			scope.infoList = data.sort(function(p1, p2) {
-				return p2.downloaded.epochSecond - p1.downloaded.epochSecond; 
+				return p2.downloaded - p1.downloaded; 
 			});
     		scope.curFolder = folder;
     		scope.curPicture = 0;
