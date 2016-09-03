@@ -42,6 +42,19 @@ angular.module('pictureApp', [])
 		event.stopPropagation();
 	}
 	
+	scope.submitAfterReset = function(form) {
+		var urls = scope.urlLines.split(/\r\n|\r|\n/);
+		http.post("../resources/folder/download_tmp/" + scope.curFolder, urls).
+		success(function(data, status, config) {
+			scope.urlLines = "";
+			form.$setPristine();
+			form.$setUntouched();
+		}).
+		error(function(data, status, headers, config) {
+			window.alert("failed image downloading")
+		});
+	}
+	
 	scope.$on('nextPic', function(event) {
 		changePic(1);
 	});
