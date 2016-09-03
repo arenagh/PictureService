@@ -17,11 +17,21 @@
 </head>
 <body>
   <div id="pictures" class="container" ng-controller="pictureController" ng-init="init('../resources/info/downloaded/list/', '../resources/pic/tmp/');showFolder('')">  
-    <div id="menu" class="row" ng-click="elimination($event)">
-      <a class="col-md-1" href="folder.html">folders</a><a class="col-md-1" href="tmp.html">tmp</a><div class="col-md-1">downloaded</div> 
+    <div id="menu-fix">
+      <div id="menu" class="row" ng-click="elimination($event)">
+        <a class="col-md-1" href="folder.html">folders</a><a class="col-md-1" href="tmp.html">tmp</a><div class="col-md-1">downloaded</div> 
+      </div>
+    
+      <h1>Downloaded</h1>
+    
+      <div id="nav-button" class="row" style="height:50px;">
+        <a href="#" class="btn btn-primary" ng-click="startPic()" >|&lt;-</a>
+        <a href="#" class="btn btn-primary" ng-click="prevPic()" >&lt;-</a>
+        <a href="#" class="btn btn-primary" ng-click="nextPic()" >-&gt;</a>
+        <a href="#" class="btn btn-primary" ng-click="endPic()" >-&gt;|</a>&nbsp;
+      </div>
     </div>
     
-    <h1>Downloaded</h1>
     <div id="picInfos">
       <div class="col-md-2" style="height:180px;display:inline-block;" ng-repeat="info in infoList">
         <a ng-click="showPicture($event, $index)">

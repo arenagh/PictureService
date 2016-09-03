@@ -45,7 +45,7 @@ angular.module('pictureApp', [])
 		scope.curPicture = index;
 		
 		event.stopPropagation();
-	}
+	};
 	
 	scope.submitAfterReset = function(form) {
 		var urls = scope.urlLines.split(/\r\n|\r|\n/);
@@ -58,14 +58,23 @@ angular.module('pictureApp', [])
 		error(function(data, status, headers, config) {
 			window.alert("failed image downloading")
 		});
-	}
+	};
 	
-	scope.$on('nextPic', function(event) {
+	scope.nextPic = function() {
 		changePic(1);
-	});
-	scope.$on('prevPic', function(event) {
+	};
+	scope.prevPic = function() {
 		changePic(-1);
-	});
+	};
+	scope.startPic = function() {
+		showPic(scope.infoList[0].fileId);
+		scope.curPicture = 0;
+	};
+	scope.endPic = function() {
+		var last = scope.infoList.length - 1;
+		showPic(scope.infoList[last].fileId);
+		scope.curPicture = last;
+	};
 	
 	function getFolders(url) {
 		http.get(url).

@@ -23,8 +23,12 @@
       </div>
     
       <h1>current folder:{{curFolder}}</h1>
-      <div id="folders" class="row" style="height:50px;">
-        <div class="col-md-1" ng-repeat="folder in folderList"><span ng-click="showFolder(folder)">{{folder}}</span>&nbsp;</div> 
+      <div id="nav-button" class="row" style="height:50px;">
+        <a href="#" class="btn btn-primary" ng-click="startPic()" >|&lt;-</a>
+        <a href="#" class="btn btn-primary" ng-click="prevPic()" >&lt;-</a>
+        <a href="#" class="btn btn-primary" ng-click="nextPic()" >-&gt;</a>
+        <a href="#" class="btn btn-primary" ng-click="endPic()" >-&gt;|</a>&nbsp;
+        <a href="#" class="btn btn-default" ng-click="showFolder(folder)" ng-repeat="folder in folderList">{{folder}}</a>
       </div>
       <form action="{{'../resources/folder/download_tmp/' + curFolder}}" method="POST" name="form">
         <textarea name="urls" rows="10" cols="80" class="form-control col-md-12" ng-model="urlLines" ng-click="elimination($event)"></textarea>
