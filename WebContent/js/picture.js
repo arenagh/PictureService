@@ -15,7 +15,7 @@ angular.module('pictureApp', [])
 		http.get(scope.infoListBase + folder).
 	    success(function(data, status, headers, config) {
 			scope.infoList = data.sort(function(p1, p2) {
-				return p1.downloaded.epochSecond - p2.downloaded.epochSecond; 
+				return p2.downloaded.epochSecond - p1.downloaded.epochSecond; 
 			});
     		scope.curFolder = folder;
     		scope.curPicture = 0;
