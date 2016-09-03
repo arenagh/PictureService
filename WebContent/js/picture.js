@@ -100,34 +100,4 @@ angular.module('pictureApp', [])
 		
 		window.open(url, "pic");
 	}
-}])
-.controller('keyController', ['$scope', '$http', '$window', function(scope, http, window) {
-	
-	scope.keyRelease = function(event) {
-		
-		var keyCode = event.keyCode;
-		
-		if (keyCode == 39) { // ->
-			scope.$broadcast('nextPic');
-		} else if (keyCode == 37) { // <-
-			scope.$broadcast('prevPic');
-		}
-		
-	};
-	
-	scope.mouseClick = function(event) {
-		
-		var clickButton = event.button;
-		
-		if (clickButton == 0) {
-			scope.$broadcast('nextPic');
-		} else if (clickButton == 1) {
-			scope.$broadcast('prevPic');
-		}
-	};
-	
-	scope.elimination = function(event) {
-		event.stopPropagation();
-	}
-	
 }]);
