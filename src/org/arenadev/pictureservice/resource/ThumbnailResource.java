@@ -15,7 +15,7 @@ public class ThumbnailResource {
 	public static final MimetypesFileTypeMap MIME_MAP = new MimetypesFileTypeMap();
 
 	@GET
-	@Path("tmp/{id}")
+	@Path("tmp/{id:.+}")
 	public Response downloadTmpThumbnails(@PathParam("id") String id) {
 		
 		return makeResponceForThumbnail(id, PictureRepository.getTmpRepository());
@@ -23,7 +23,7 @@ public class ThumbnailResource {
 	}
 	
 	@GET
-	@Path("{id}")
+	@Path("{id:.+}")
 	public Response downloadThumbnails(@PathParam("id") String id) {
 		
 		return makeResponceForThumbnail(id, PictureRepository.getRepository());
@@ -32,7 +32,7 @@ public class ThumbnailResource {
 
 	private Response makeResponceForThumbnail(String id, PictureRepository repository) {
 		ResponseBuilder result;
-		java.nio.file.Path path = repository.getPath(id);
+		java.nio.file.Path path = repository.getThumbnailPath(id);
 		result = Response.ok(path.toFile());
 		result.type(MIME_MAP.getContentType(path.toFile()));
 		

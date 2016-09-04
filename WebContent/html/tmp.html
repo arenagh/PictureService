@@ -16,7 +16,7 @@
 
 </head>
 <body>
-  <div id="pictures" class="container" ng-controller="pictureController" ng-init="init('../resources/info/tmp/list/', '../resources/pic/tmp/', '../resources/folder/tmp/list')">
+  <div id="pictures" class="container" ng-controller="pictureController" ng-init="init('../resources/info/tmp/list/', '../resources/picture/tmp/', '../resources/folder/tmp/list')">
     <div id="menu-fix">
       <div id="menu" class="row" ng-click="elimination($event)">
         <a class="col-md-1" href="folder.html">folders</a><div class="col-md-1">tmp</div><a class="col-md-1" href="downloaded.html">downloaded</a> 
@@ -40,7 +40,7 @@
     <div style="overflow-y:auto;height:100%;">
       <div class="col-md-2" style="height:180px;display:inline-block;" ng-repeat="info in infoList">
         <a ng-click="showPicture($event, $index)">
-          <img src="../resources/thumb/tmp/{{info.fileId}}" />
+          <img src="../resources/thumbnail/tmp/{{info.fileId}}" />
         </a>
       </div>
     </div>

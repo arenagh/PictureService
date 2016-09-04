@@ -17,13 +17,13 @@ import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureRepository;
 
-@Path("picure")
+@Path("picture")
 public class PictureResource {
 	
 	public static final MimetypesFileTypeMap MIME_MAP = new MimetypesFileTypeMap();
 
 	@GET
-	@Path("tmp/{id}")
+	@Path("tmp/{id:.+}")
 	public Response getTmpPicture(@PathParam("id") String id, @QueryParam("width") Integer width, @QueryParam("height") Integer height) throws IOException {
 
 		return makeResponceForPicture(id, PictureRepository.getTmpRepository(), width, height);
@@ -31,7 +31,7 @@ public class PictureResource {
 	}
 
 	@GET
-	@Path("{id}")
+	@Path("{id:.+}")
 	public Response getPicture(@PathParam("id") String id, @QueryParam("width") Integer width, @QueryParam("height") Integer height) throws IOException {
 
 		return makeResponceForPicture(id, PictureRepository.getRepository(), width, height);
