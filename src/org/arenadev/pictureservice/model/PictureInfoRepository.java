@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -74,14 +73,6 @@ public class PictureInfoRepository {
 		return tmpInfoRepository;
 	}
 	
-	@Deprecated
-	public List<PictureInfo> getPictureInfoList(String tag) throws IOException {
-		
-		loadPictureInfoList(tag);
-		return infoMap.get(tag);
-		
-	}
-	
 	public void loadPictureInfoList(String tag) throws IOException { // TODO 複数tag対応
 
 		if (!folderBaseList.contains(tag)) {
@@ -120,18 +111,6 @@ public class PictureInfoRepository {
 		}
 	}
 	
-	@Deprecated
-	public List<String> getFolerBaseNames() {
-		return folderBaseList;
-	}
-	
-	@Deprecated
-	public String getFolderBaseName(String folder) {
-		Optional<String> result = folderBaseList.stream().filter(s -> folder.startsWith(s)).findFirst();
-		
-		return result.orElse(null);
-	}
-
 	public List<String> getTagList() {
 		return tagList;
 	}
@@ -150,16 +129,6 @@ public class PictureInfoRepository {
 		
 		if (pictureInfoList.size() > 0) {
 			List<String> lines = pictureInfoList.stream().map(this::marshall).collect(Collectors.toList());
-			Path meta = metaRoot.resolve(tag);
-			Files.write(meta, lines);
-		}
-	}
-	
-	@Deprecated
-	public void storeInfo(String tag, List<PictureInfo> infoList) throws IOException { // metaファイルがtag別なのは便宜上
-
-		if (infoList.size() > 0) {
-			List<String> lines = infoList.stream().map(this::marshall).collect(Collectors.toList());
 			Path meta = metaRoot.resolve(tag);
 			Files.write(meta, lines);
 		}

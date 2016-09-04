@@ -16,7 +16,7 @@
 
 </head>
 <body>
-  <div id="pictures" class="container" ng-controller="pictureController" ng-init="init('../resources/info/tmp/list/', '../resources/picture/tmp/', '../resources/folder/tmp/list')">
+  <div id="pictures" class="container" ng-controller="pictureController" ng-init="init('../resources/info/tmp/list/', '../resources/picture/tmp/', '../resources/tag/tmp/list')">
     <div id="menu-fix">
       <div id="menu" class="row" ng-click="elimination($event)">
         <a class="col-md-1" href="folder.html">folders</a><div class="col-md-1">tmp</div><a class="col-md-1" href="downloaded.html">downloaded</a> 
@@ -30,7 +30,7 @@
         <a href="#" class="btn btn-primary" ng-click="endPic()" >-&gt;|</a>&nbsp;
         <a href="#" class="btn btn-default" ng-click="showFolder(folder)" ng-repeat="folder in folderList">{{folder}}</a>
       </div>
-      <form action="{{'../resources/folder/download_tmp/' + curFolder}}" method="POST" name="form">
+      <form name="form">
         <textarea name="urls" rows="10" cols="80" class="form-control col-md-12" ng-model="urlLines" ng-click="elimination($event)"></textarea>
         <input type="button" class="btn btn-primary" value="download" ng-click="submitAfterReset(form)"/>
       </form>

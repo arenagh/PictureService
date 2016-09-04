@@ -33,10 +33,10 @@ public class MakeThumbnails {
 
 	private static void generateThumbnails(PictureInfoRepository infoRepository, PictureRepository picRepository)
 			throws IOException, FileNotFoundException, FileIsDirectoryException {
-		List<String> folderBaseList = infoRepository.getFolerBaseNames();
+		List<String> folderBaseList = infoRepository.getTagList();
 
 		for (String folderBase : folderBaseList) {
-			List<PictureInfo> infoList = infoRepository.getPictureInfoList(folderBase);
+			List<PictureInfo> infoList = infoRepository.getPictureInfos(folderBase);
 			for (PictureInfo info : infoList) {
 				System.out.println(info.getFileId());
 				Path path = picRepository.getPath(info.getFileId());

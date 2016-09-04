@@ -54,12 +54,6 @@ public class PictureMagnifier {
 		
 	}
 
-	@Deprecated
-	public BufferedImage magnify(FileAccessor accessor, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException {
-		
-		return magnify(accessor.getPath(), targetWidth, targetHeight);
-	}
-
 	public void makeThumbnail(PictureInfo info, PictureRepository pRepository) throws FileIsDirectoryException, IOException {
 
 		BufferedImage thumb = magnify(pRepository.getPath(info.getFileId()), SIZE, SIZE);
