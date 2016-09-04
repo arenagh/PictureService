@@ -3,7 +3,6 @@ package org.arenadev.pictureservice.model;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -12,21 +11,14 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.core.Response;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientConfig;
 
 public class Downloader {
-	
-	@Deprecated
-	public static PictureInfo downloadFile(FileAccessor accessor, String urlStr) throws URISyntaxException, IOException {
-		Path path = accessor.getPath();
-		String folder = path.getParent().getFileName().toString();
-		return downloadFile(accessor.getPath(), new URI(urlStr), folder);
-	}
 	
 	public static PictureInfo downloadFile(Path path, URI uri, String folder) throws IOException {
 		

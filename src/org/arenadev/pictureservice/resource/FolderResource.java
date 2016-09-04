@@ -6,13 +6,9 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.List;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.arenadev.pictureservice.model.Downloader;
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
@@ -25,21 +21,6 @@ import org.arenadev.pictureservice.model.PictureRepository;
 
 @Path("folder")
 public class FolderResource {
-
-	@GET
-	@Path("list")
-	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-	public List<String> getFolders() {
-		List<String> result = PictureInfoRepository.getRepository().getFolerBaseNames();
-		return result;
-	}
-
-	@GET
-	@Path("tmp/list")
-	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-	public List<String> getTmpFolders() {
-		return PictureInfoRepository.getTmpRepository().getFolerBaseNames();
-	}
 	
 	@POST
 	@Path("download_tmp/{folder}")

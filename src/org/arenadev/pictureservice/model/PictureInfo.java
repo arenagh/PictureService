@@ -1,61 +1,27 @@
 package org.arenadev.pictureservice.model;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributeView;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-//import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class PictureInfo {
 	
 	public static final List<String> PICTURE_EXTENTION = Collections.unmodifiableList(Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".tiff", ".tif"));
 	
-	@Deprecated
-	private String filename;
-	@Deprecated
-	private String folderName;
 	private String fileId;
 	private Instant created;
 	private Instant downloaded;
 	private URI source;
 	private BigInteger pHash;
 	private List<String> tags;
-	
-	@Deprecated
-	private PictureInfo(Path file, URI src, Instant time) {
-		this();
-		
-		filename = file.getFileName().toString();
-		folderName = file.getParent().getFileName().toString();
-		
-		fileId = String.format("%s/%s", folderName, filename);
-		
-		source = src;
-
-		BasicFileAttributes attrs;
-		try {
-			attrs = Files.getFileAttributeView(file, BasicFileAttributeView.class).readAttributes();
-			downloaded = attrs.creationTime().toInstant();
-		} catch (IOException e) {
-			downloaded = null;
-		}
-		created = time;
-		if (created == null) {
-			created = downloaded;
-		}
-		pHash = null;
-		
-		tags.add(folderName);
-	}
 	
 	private PictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, String... tagArray) {
 		this();
@@ -74,23 +40,6 @@ public class PictureInfo {
 		tags= new ArrayList<>();
 	}
 	
-	public static PictureInfo getPictureInfo(Path file) {
-		return getPictureInfo(file, null, null);
-	}
-
-	@Deprecated
-	public static PictureInfo getPictureInfo(Path file, URI source) {
-		return getPictureInfo(file, source, null);
-	}
-
-	@Deprecated
-	public static PictureInfo getPictureInfo(Path file, URI source, Instant time) {
-		if (!isPictureFile(file.toString())) {
-			return null;
-		}
-		return new PictureInfo(file, source, time);
-	}
-	
 	public static PictureInfo getPictureInfo(String id, URI source, Instant createdTime, Instant downloadedTime, String... tagArray) {
 		return new PictureInfo(id, source, createdTime, downloadedTime, tagArray);
 	}
@@ -102,16 +51,6 @@ public class PictureInfo {
 	
 	public String getFileId() {
 		return fileId;
-	}
-	
-	@Deprecated
-	public String getFilename() {
-		return filename;
-	}
-
-	@Deprecated
-	public String getFolderName() {
-		return folderName;
 	}
 
 	public Instant getCreated() {

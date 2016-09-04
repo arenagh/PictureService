@@ -1,6 +1,5 @@
 package org.arenadev.pictureservice.model;
 
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -57,9 +56,6 @@ public class PictureComparator {
 		}
 		
 		BufferedImage dstImg = new BufferedImage(16, 16, BufferedImage.TYPE_BYTE_GRAY);
-//		Graphics2D g2 = dstImg.createGraphics();
-//		Image img = srcImg.getScaledInstance(HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, Image.SCALE_FAST);
-//		g2.drawImage(img, 0, 0, HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, null);
 		dstImg.createGraphics().drawImage(srcImg.getScaledInstance(HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, Image.SCALE_FAST), 0, 0, HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, null);
 
 		List<Integer> grayScaleList = new ArrayList<>();
@@ -85,12 +81,5 @@ public class PictureComparator {
 		
 		return new BigInteger(bytes);
 	}
-
-	@Deprecated
-	public BigInteger getPHash(FileAccessor accessor) throws IOException {
-		
-		return getPHash(accessor.getPath());
-	}
-	
 	
 }
