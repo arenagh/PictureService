@@ -46,7 +46,7 @@ public class Downloader {
 		
 		PictureGeometry geometrer = PictureGeometry.getGeometrer();
 		
-		PictureInfo info = PictureInfo.getPictureInfo(String.format("%s/%s", folder, name), uri, timestamp, Instant.now(), geometrer.getPictureSize(dest), geometrer.getFileSize(dest), folder);
+		PictureInfo info = PictureInfo.getPictureInfo(String.format("%s/%s", folder, name), uri, timestamp, Instant.now(), geometrer.getPictureSize(dest), geometrer.getFileSize(dest), transformer.getReferer(), folder);
 		info.setPHash(geometrer.getPHash(dest));
 
 		return info;

@@ -24,8 +24,10 @@ public class PictureInfo {
 	private long size;
 	private BigInteger pHash;
 	private List<String> tags;
+	private String description;
+	private URI referer;
 	
-	private PictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, String... tagArray) {
+	private PictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
 		this();
 		
 		fileId = id;
@@ -35,17 +37,20 @@ public class PictureInfo {
 		downloaded = downloadedTime;
 		pictureSize = picSize;
 		size = fileSize;
+		referer = ref;
 		pHash = null;
 		
 		Arrays.stream(tagArray).forEach(t -> tags.add(t));
+		
+		description = null;
 	}
 	
 	public PictureInfo() {
 		tags= new ArrayList<>();
 	}
 	
-	public static PictureInfo getPictureInfo(String id, URI source, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, String... tagArray) {
-		return new PictureInfo(id, source, createdTime, downloadedTime, picSize, fileSize, tagArray);
+	public static PictureInfo getPictureInfo(String id, URI source, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
+		return new PictureInfo(id, source, createdTime, downloadedTime, picSize, fileSize, ref, tagArray);
 	}
 
 	public static boolean isPictureFile(String filename) {
@@ -106,6 +111,18 @@ public class PictureInfo {
 		tags.clear();
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public URI getReferer() {
+		return referer;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(fileId);

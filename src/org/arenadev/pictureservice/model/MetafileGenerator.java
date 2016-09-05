@@ -153,6 +153,6 @@ public class MetafileGenerator {
 			e.printStackTrace();
 		}
 		
-		return PictureInfo.getPictureInfo(fileId, null, time, time, picSize, size, tag);
+		return PictureInfo.getPictureInfo(fileId, null, time, time, picSize, size, null, tag);
 	}
 }
