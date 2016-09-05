@@ -14,7 +14,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MetafileGenerator {
-	
+
+	private static final int FULL_PROGRESS_PER_REPO = 500;
+
 	private static MetafileGenerator metafileGenerator = new MetafileGenerator();
 	
 	private PictureInfoRepository infoRepository;
@@ -52,9 +54,9 @@ public class MetafileGenerator {
 		}
 		
 		genMetaFiles(infoRepository, picRepository);
-		progress = 500;
+		progress = FULL_PROGRESS_PER_REPO;
 		genMetaFiles(tmpInfoRepository, tmpPicRepository);
-		progress = 1000;
+		progress = FULL_PROGRESS_PER_REPO * 2;
 		
 		synchronized (this) {
 			running = false;
@@ -62,6 +64,7 @@ public class MetafileGenerator {
 	}
 	
 	private void genMetaFiles(PictureInfoRepository infoRepo, PictureRepository picRepo) {
+		int baseProgress = progress;
 		List<String> tagList = infoRepo.getTagList();
 		Map<String, List<PictureInfo>> pictureInfoMapFromMeta = new HashMap<>();
 		Map<String, List<PictureInfo>> pictureInfoMapFromImage = new HashMap<>();
@@ -86,29 +89,19 @@ public class MetafileGenerator {
 		
 		int fileCount = pictureInfoMapFromImage.entrySet().stream().map(e -> e.getValue().size()).reduce((i, j) -> i + j).orElse(0);
 		if (fileCount == 0) {
-			progress += 500;
+			progress += FULL_PROGRESS_PER_REPO;
 			return;
 		}
-		int tick = 500 / fileCount;
-		int unitFiles = fileCount / 500;
-		PictureComparator comparator = PictureComparator.getComparator();
-		int rest = unitFiles;
+		int doneCount = 0;
 		for (Map.Entry<String, List<PictureInfo>> entry : pictureInfoMapFromImage.entrySet()) {
 			try {
 				String tag = entry.getKey();
 				for (PictureInfo pInfo : entry.getValue()) {
-					pInfo.setPHash(comparator.getPHash(picRepo.getPath(pInfo.getFileId())));
+					pInfo.setPHash(PictureGeometry.getGeometrer().getPHash(picRepo.getPath(pInfo.getFileId())));
 					infoRepo.addPictureInfo(tag, pInfo);
 					// progress advanced
-					if (tick > 0) {
-						progress += tick;
-					} else {
-						rest--;
-						if (rest <= 0) {
-							progress++;
-							rest = unitFiles;
-						}
-					}
+					doneCount++;
+					progress = baseProgress + (FULL_PROGRESS_PER_REPO * doneCount) / fileCount;
 				}
 				List<PictureInfo> result = new ArrayList<>();
 				result.addAll(pictureInfoMapFromMeta.get(tag));
@@ -145,14 +138,21 @@ public class MetafileGenerator {
 
 		Instant time = null;
 		BasicFileAttributes attrs;
+		RectangleSize picSize = null;
+		long size = 0;
 		try {
 			attrs = Files.getFileAttributeView(path, BasicFileAttributeView.class).readAttributes();
 			time = attrs.creationTime().toInstant();
+			
+			PictureGeometry geom = PictureGeometry.getGeometrer();
+			picSize = geom.getPictureSize(path);
+			size = geom.getFileSize(path);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return PictureInfo.getPictureInfo(fileId, null, time, time, tag);
+		return PictureInfo.getPictureInfo(fileId, null, time, time, picSize, size, tag);
 	}
 }

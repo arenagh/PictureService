@@ -20,10 +20,12 @@ public class PictureInfo {
 	private Instant created;
 	private Instant downloaded;
 	private URI source;
+	private RectangleSize pictureSize;
+	private long size;
 	private BigInteger pHash;
 	private List<String> tags;
 	
-	private PictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, String... tagArray) {
+	private PictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, String... tagArray) {
 		this();
 		
 		fileId = id;
@@ -31,6 +33,8 @@ public class PictureInfo {
 		source = src;
 		created = createdTime;
 		downloaded = downloadedTime;
+		pictureSize = picSize;
+		size = fileSize;
 		pHash = null;
 		
 		Arrays.stream(tagArray).forEach(t -> tags.add(t));
@@ -40,8 +44,8 @@ public class PictureInfo {
 		tags= new ArrayList<>();
 	}
 	
-	public static PictureInfo getPictureInfo(String id, URI source, Instant createdTime, Instant downloadedTime, String... tagArray) {
-		return new PictureInfo(id, source, createdTime, downloadedTime, tagArray);
+	public static PictureInfo getPictureInfo(String id, URI source, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, String... tagArray) {
+		return new PictureInfo(id, source, createdTime, downloadedTime, picSize, fileSize, tagArray);
 	}
 
 	public static boolean isPictureFile(String filename) {
@@ -63,6 +67,14 @@ public class PictureInfo {
 	
 	public URI getSource() {
 		return source;
+	}
+
+	public RectangleSize getPictureSize() {
+		return pictureSize;
+	}
+
+	public long getSize() {
+		return size;
 	}
 
 	public BigInteger getPHash() {

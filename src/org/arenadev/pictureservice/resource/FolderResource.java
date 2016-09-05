@@ -13,7 +13,6 @@ import javax.ws.rs.PathParam;
 import org.arenadev.pictureservice.model.Downloader;
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.LastDownloadedPictureInfoRepository;
-import org.arenadev.pictureservice.model.PictureComparator;
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureMagnifier;
@@ -48,7 +47,6 @@ public class FolderResource {
 					java.nio.file.Path path = pRepository.getPath(fileId);
 					URI uri = new URI(urlLine);
 					PictureInfo info = Downloader.downloadFile(path, uri, folder);
-					info.setPHash(PictureComparator.getComparator().getPHash(path));
 					PictureMagnifier.getMaker().makeThumbnail(info, pRepository);
 					infoRepository.addPictureInfo(folder, info);
 					infoRepository.store(folder);
