@@ -1,6 +1,5 @@
 package org.arenadev.pictureservice.model;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -10,8 +9,6 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import javax.imageio.ImageIO;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -34,8 +31,8 @@ public class PictureGeometry {
 	
 	public RectangleSize getPictureSize(Path imagePath) throws IOException {
 		
-		BufferedImage image = ImageIO.read(imagePath.toFile());
-		return new RectangleSize(image.getWidth(), image.getHeight());
+		Mat im = Imgcodecs.imread(imagePath.toString());
+		return new RectangleSize(im.width(), im.height());
 		
 	}
 	

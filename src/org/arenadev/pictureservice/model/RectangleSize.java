@@ -9,6 +9,11 @@ public class RectangleSize {
 		width = w;
 		height = h;
 	}
+	
+	public RectangleSize() {
+		width = 0;
+		height = 0;
+	}
 
 	public int getWidth() {
 		return width;
