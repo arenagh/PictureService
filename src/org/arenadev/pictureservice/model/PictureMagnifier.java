@@ -27,7 +27,7 @@ public class PictureMagnifier {
 	
 	public Mat magnify(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException {
 		
-		Mat im = Imgcodecs.imread(path.toString());
+		Mat im = PictureReader.readPictureFile(path);
 		if (im == null) {
 			System.out.println(String.format("skip:%s", path.toString()));
 			return null;

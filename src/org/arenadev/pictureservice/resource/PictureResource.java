@@ -3,7 +3,6 @@ package org.arenadev.pictureservice.resource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -15,12 +14,13 @@ import javax.ws.rs.core.Response.Status;
 
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.PictureMagnifier;
+import org.arenadev.pictureservice.model.PictureReader;
 import org.arenadev.pictureservice.model.PictureRepository;
 
 @Path("picture")
 public class PictureResource {
 	
-	public static final MimetypesFileTypeMap MIME_MAP = new MimetypesFileTypeMap();
+//	public static final MimetypesFileTypeMap MIME_MAP = new MimetypesFileTypeMap();
 
 	@GET
 	@Path("tmp/{id:.+}")
@@ -51,7 +51,7 @@ public class PictureResource {
 			}
 
 			result = Response.ok(contents);
-			result.type(MIME_MAP.getContentType(path.toFile()));
+			result.type(PictureReader.MIME_MAP.getContentType(path.toFile()));
 		} catch(FileNotFoundException e) {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		} catch(FileIsDirectoryException e) {
