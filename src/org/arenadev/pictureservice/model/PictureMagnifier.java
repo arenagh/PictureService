@@ -1,13 +1,15 @@
 package org.arenadev.pictureservice.model;
 
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import javax.imageio.ImageIO;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 public class PictureMagnifier {
 
@@ -23,19 +25,20 @@ public class PictureMagnifier {
 		return maker;
 	}
 	
-	public BufferedImage magnify(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException {
+	public Mat magnify(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException {
 		
-		BufferedImage image = ImageIO.read(path.toFile());
-		if (image == null) {
+		Mat im = Imgcodecs.imread(path.toString());
+		if (im == null) {
+			System.out.println(String.format("skip:%s", path.toString()));
 			return null;
 		}
 
 		if ((targetWidth == null) && (targetHeight == null)) {
-			return image;
+			return im;
 		}
 
-		int width = image.getWidth();
-		int height = image.getHeight();
+		int width = im.width();
+		int height = im.height();
 		
 		double scale;
 		if (targetWidth == null) {
@@ -46,25 +49,43 @@ public class PictureMagnifier {
 			scale = Math.min((float) targetWidth / (float) width, (float) targetHeight / (float) height);
 		}
 		
-		BufferedImage scaledImage = new BufferedImage((int) (width * scale), (int) (height * scale), image.getType());
-		AffineTransformOp atOp = new AffineTransformOp(AffineTransform.getScaleInstance(scale, scale), AffineTransformOp.TYPE_BICUBIC);
-		atOp.filter(image, scaledImage);
+		double scaledWidth = width * scale;
+		double scaledHeight = height * scale;
 		
-		return scaledImage;
+		Mat scaledIm = new Mat((int) scaledHeight, (int) scaledWidth, im.type());
+		Imgproc.resize(im, scaledIm, new Size(scaledWidth, scaledHeight), scale, scale, Imgproc.INTER_LANCZOS4);
+		
+		return scaledIm;
 		
 	}
 
 	public void makeThumbnail(PictureInfo info, PictureRepository pRepository) throws FileIsDirectoryException, IOException {
 
-		BufferedImage thumb = magnify(pRepository.getPath(info.getFileId()), SIZE, SIZE);
+		Mat thumb = magnify(pRepository.getPath(info.getFileId()), SIZE, SIZE);
 		Path thumbPath = pRepository.getThumbnailPath(info.getFileId());
 		
 		if (!Files.exists(thumbPath.getParent())) {
 			Files.createDirectories(thumbPath.getParent());
 		}
 		
-		ImageIO.write(thumb, "png", thumbPath.toFile());
+		Imgcodecs.imwrite(thumbPath.toString(), thumb);
 		
 	}
 
+	public BufferedImage magnifyToBufferedImage(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException {
+
+		Mat scaledIm = magnify(path, targetWidth, targetHeight);
+		Mat converted = new Mat(targetHeight, targetWidth, CvType.CV_8UC3);
+		Imgproc.cvtColor(scaledIm, converted, Imgproc.COLOR_RGB2BGR);
+		
+        byte[] data = new byte[converted.width() * converted.height() * (int)converted.elemSize()];
+        converted.get(0, 0, data);
+
+        BufferedImage result = new BufferedImage(converted.width(), converted.height(), BufferedImage.TYPE_3BYTE_BGR);
+        result.getRaster().setDataElements(0, 0, converted.width(), scaledIm.height(), data);
+        
+        return result;
+
+	}
+	
 }

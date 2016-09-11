@@ -1,11 +1,7 @@
 package org.arenadev.pictureservice.model;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -13,7 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.imageio.ImageIO;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 public class PictureComparator {
 	
@@ -43,26 +43,23 @@ public class PictureComparator {
 		
 		System.out.println(imagePath.toString());
 		
-		BufferedImage srcImg;
-		try (InputStream imgInputStream = Files.newInputStream(imagePath)) {
-			srcImg = ImageIO.read(imgInputStream);
-		} catch (IllegalArgumentException e) { // ?
-			return BigInteger.valueOf(0);
-		}
-		
-		if (srcImg == null) {
+		Mat im = Imgcodecs.imread(imagePath.toString());
+		if (im == null) {
 			System.out.println(String.format("skip:%s", imagePath.toString()));
 			return BigInteger.valueOf(0);
 		}
 		
-		BufferedImage dstImg = new BufferedImage(16, 16, BufferedImage.TYPE_BYTE_GRAY);
-		dstImg.createGraphics().drawImage(srcImg.getScaledInstance(HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, Image.SCALE_FAST), 0, 0, HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, null);
+		Mat small = new Mat(HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, CvType.CV_8UC3);
+		Imgproc.resize(im, small, new Size(16, 16));
+		
+		Mat dst = new Mat(HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, CvType.CV_8UC1);
+		Imgproc.cvtColor(small, dst, Imgproc.COLOR_RGB2GRAY);
 
 		List<Integer> grayScaleList = new ArrayList<>();
 		
 		for (int y = 0 ; y < HASH_PICTURE_SIZE ; y++) {
 			for (int x = 0 ; x < HASH_PICTURE_SIZE ; x++) {
-				grayScaleList.add(dstImg.getRGB(x, y) & 0xFF);
+				grayScaleList.add(((int) dst.get(y, x)[0]) & 0xFF);
 			}
 		}
 		
