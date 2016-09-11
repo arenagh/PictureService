@@ -12,7 +12,6 @@ import java.util.stream.IntStream;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 public class PictureComparator {
@@ -43,7 +42,7 @@ public class PictureComparator {
 		
 		System.out.println(imagePath.toString());
 		
-		Mat im = Imgcodecs.imread(imagePath.toString());
+		Mat im = PictureReader.readPictureFile(imagePath);
 		if (im == null) {
 			System.out.println(String.format("skip:%s", imagePath.toString()));
 			return BigInteger.valueOf(0);

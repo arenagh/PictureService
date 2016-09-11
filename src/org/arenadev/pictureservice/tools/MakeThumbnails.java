@@ -9,6 +9,7 @@ import java.util.List;
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
+import org.arenadev.pictureservice.model.PictureReader;
 import org.arenadev.pictureservice.model.PictureRepository;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -43,7 +44,7 @@ public class MakeThumbnails {
 
 				try {
 					
-					Mat im = Imgcodecs.imread(path.toString());
+					Mat im = PictureReader.readPictureFile(path);
 
 					if (im == null) {
 						continue;
