@@ -47,7 +47,7 @@ public class PictureResource {
 			Object contents = path.toFile();
 			
 			if ((width != null) || (height != null)) {
-				contents = PictureMagnifier.getMaker().magnify(path, width, height);
+				contents = PictureMagnifier.getMaker().magnifyToBufferedImage(path, width, height);
 			}
 
 			result = Response.ok(contents);

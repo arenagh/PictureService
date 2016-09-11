@@ -1,19 +1,19 @@
 package org.arenadev.pictureservice.tools;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureRepository;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 public class MakeThumbnails {
 
@@ -42,26 +42,27 @@ public class MakeThumbnails {
 				Path path = picRepository.getPath(info.getFileId());
 
 				try {
-					BufferedImage image = ImageIO.read(path.toFile());
-					if (image == null) {
+					
+					Mat im = Imgcodecs.imread(path.toString());
+
+					if (im == null) {
 						continue;
 					}
-					int width = image.getWidth();
-					int height = image.getHeight();
+					int width = im.width();;
+					int height = im.height();
 
 					int scaledWidth = (width >= height) ? SIZE : SIZE * width / height;
 					int scaledHeight = (width <= height) ? SIZE : SIZE * height / width;
 
-					BufferedImage thumb;
-					thumb = new BufferedImage(scaledWidth, scaledHeight, image.getType());
-					thumb.getGraphics().drawImage(image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH), 0, 0, scaledWidth, scaledHeight, null);
-
+					Mat thumb = new Mat(scaledHeight, scaledWidth, im.type());
+					Imgproc.resize(im, thumb, new Size(scaledHeight, scaledWidth), scaledWidth / width, scaledHeight / height, Imgproc.INTER_LANCZOS4);
+					
 					Path thumbPath = picRepository.getThumbnailPath(info.getFileId());
 					if (!Files.exists(thumbPath.getParent())) {
 						Files.createDirectories(thumbPath.getParent());
 					}
 
-					ImageIO.write(thumb, "png", thumbPath.toFile());
+					Imgcodecs.imwrite(thumbPath.toString(), thumb);
 				} catch (Exception e) {
 					continue;
 				}

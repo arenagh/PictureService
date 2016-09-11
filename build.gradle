@@ -6,8 +6,8 @@ dependencies {
   runtime 'org.glassfish.jersey.core:jersey-server:2.23'
   runtime 'org.glassfish.jersey.media:jersey-media-json-jackson:2.23'
   runtime 'org.glassfish.jersey.bundles:jaxrs-ri:2.23'
-  runtime 'org.jboss.weld.se:weld-se-core:2.0.3.Final'
-  runtime 'org.slf4j:slf4j-simple:1.7.5'
-  runtime 'com.fasterxml.jackson.core:jackson-databind:2.7.4'
-  runtime 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.4'
+  runtime 'org.jboss.weld.se:weld-se-core:2.3.5.Final'
+  runtime 'org.slf4j:slf4j-simple:1.7.21'
+  runtime 'com.fasterxml.jackson.core:jackson-databind:2.8.2'
+  runtime 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.2'
 }
