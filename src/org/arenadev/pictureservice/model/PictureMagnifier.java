@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -25,7 +26,7 @@ public class PictureMagnifier {
 		return maker;
 	}
 	
-	public Mat magnify(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException {
+	public Mat magnify(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException, CvException {
 		
 		Mat im = PictureReader.readPictureFile(path);
 		if (im == null) {
@@ -54,12 +55,13 @@ public class PictureMagnifier {
 		
 		Mat scaledIm = new Mat((int) scaledHeight, (int) scaledWidth, im.type());
 		Imgproc.resize(im, scaledIm, new Size(scaledWidth, scaledHeight), scale, scale, Imgproc.INTER_LANCZOS4);
+		im.release();
 		
 		return scaledIm;
 		
 	}
 
-	public void makeThumbnail(PictureInfo info, PictureRepository pRepository) throws FileIsDirectoryException, IOException {
+	public void makeThumbnail(PictureInfo info, PictureRepository pRepository) throws FileIsDirectoryException, IOException, CvException {
 
 		Mat thumb = magnify(pRepository.getPath(info.getFileId()), SIZE, SIZE);
 		Path thumbPath = pRepository.getThumbnailPath(info.getFileId());
@@ -69,10 +71,11 @@ public class PictureMagnifier {
 		}
 		
 		Imgcodecs.imwrite(thumbPath.toString(), thumb);
+		thumb.release();
 		
 	}
 
-	public BufferedImage magnifyToBufferedImage(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException {
+	public BufferedImage magnifyToBufferedImage(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException, CvException {
 
 		Mat scaledIm = magnify(path, targetWidth, targetHeight);
 		Mat converted = new Mat(targetHeight, targetWidth, CvType.CV_8UC3);
@@ -83,6 +86,7 @@ public class PictureMagnifier {
 
         BufferedImage result = new BufferedImage(converted.width(), converted.height(), BufferedImage.TYPE_3BYTE_BGR);
         result.getRaster().setDataElements(0, 0, converted.width(), scaledIm.height(), data);
+        scaledIm.release();
         
         return result;
 

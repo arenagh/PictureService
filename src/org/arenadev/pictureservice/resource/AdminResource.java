@@ -73,5 +73,30 @@ public class AdminResource {
 		}
 		return Response.ok().build();
 	}
+	
+	@Path("migration/progress")
+	@GET
+	public int getMigrationProgress() {
+		return mGen.getProgress();
+	}
+	
+	@Path("migration")
+	@POST
+	public Response genMigration() {
+		synchronized (mGen) {
+			if (mGen.isGenerating()) {
+				return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+			}
+			ExecutorService singleThread = Executors.newSingleThreadExecutor();
+			singleThread.execute(new Runnable() {
+				@Override
+				public void run() {
+					mGen.migrate();
+				}
+			});
+		}
+		return Response.ok().build();
+	}
+
 
 }

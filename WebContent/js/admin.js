@@ -48,4 +48,26 @@ angular.module('adminApp', [])
 		});
 	}
 	
+	scope.migrateMeta = function() {
+		http.post("../resources/admin/migration").
+		success(function(data, status, header, config) {
+			mPromise = interval(function() {
+				getMigrateProgress();
+			}, 1000);
+		});
+	};
+	
+	function getMigrateProgress() {
+		http.get("../resources/admin/migration/progress").
+		success(function(data, status, header, config) {
+			scope.migrateProgress = data / 10;
+			if ((data >= 1000) && (mPromise != null)) {
+				interval.cancel(mPromise);
+				mPromise = null;
+			}
+		}).
+		error(function(data, status, header, config) {
+		});
+	}
+	
 }]);

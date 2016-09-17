@@ -49,8 +49,19 @@ public class PictureInfo {
 		tags= new ArrayList<>();
 	}
 	
-	public static PictureInfo getPictureInfo(String id, URI source, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
-		return new PictureInfo(id, source, createdTime, downloadedTime, picSize, fileSize, ref, tagArray);
+	public static PictureInfo getPictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
+		return new PictureInfo(id, src, createdTime, downloadedTime, picSize, fileSize, ref, tagArray);
+	}
+	
+	public PictureInfo patch(URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, Long fileSize, URI ref) {
+		URI newSource = (src == null) ? source : src;
+		Instant newCreatedTime = (createdTime == null) ? created : createdTime;
+		Instant newDownloadedTime = (downloadedTime == null) ? downloaded : downloadedTime;
+		RectangleSize newPicSize = (picSize == null) ? pictureSize : picSize;
+		long newFileSize = (fileSize == null) ? size : fileSize;
+		URI newRef = (ref == null) ? referer : ref;
+		
+		return new PictureInfo(fileId, newSource, newCreatedTime, newDownloadedTime, newPicSize, newFileSize, newRef, tags.toArray(new String[0]));
 	}
 
 	public static boolean isPictureFile(String filename) {
@@ -86,7 +97,7 @@ public class PictureInfo {
 		return pHash;
 	}
 	
-	public void setPHash(BigInteger ph) {
+ 	public void setPHash(BigInteger ph) {
 		pHash = ph;
 	}
 	

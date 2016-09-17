@@ -37,5 +37,12 @@ public class PictureRepository {
 	public Path getRoot() {
 		return root;
 	}
+	
+	public static String getFileId(Path path) {
+		String filename = path.getFileName().toString();
+		String folderName = path.getParent().getFileName().toString();
+		
+		return String.format("%s/%s", folderName, filename);
+	}
 
 }

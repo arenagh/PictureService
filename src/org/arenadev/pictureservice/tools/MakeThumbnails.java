@@ -57,6 +57,7 @@ public class MakeThumbnails {
 
 					Mat thumb = new Mat(scaledHeight, scaledWidth, im.type());
 					Imgproc.resize(im, thumb, new Size(scaledHeight, scaledWidth), scaledWidth / width, scaledHeight / height, Imgproc.INTER_LANCZOS4);
+					im.release();
 					
 					Path thumbPath = picRepository.getThumbnailPath(info.getFileId());
 					if (!Files.exists(thumbPath.getParent())) {
@@ -64,6 +65,7 @@ public class MakeThumbnails {
 					}
 
 					Imgcodecs.imwrite(thumbPath.toString(), thumb);
+					thumb.release();
 				} catch (Exception e) {
 					continue;
 				}

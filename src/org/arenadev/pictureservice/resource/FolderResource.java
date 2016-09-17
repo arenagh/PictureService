@@ -17,6 +17,7 @@ import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureRepository;
+import org.opencv.core.CvException;
 
 @Path("folder")
 public class FolderResource {
@@ -51,7 +52,7 @@ public class FolderResource {
 					infoRepository.addPictureInfo(folder, info);
 					infoRepository.store(folder);
 					dRepository.addPictureInfo(info);
-				} catch (URISyntaxException | IOException | FileIsDirectoryException e) {
+				} catch (URISyntaxException | IOException | FileIsDirectoryException | CvException e) {
 					continue;
 				}
 			}

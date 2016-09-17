@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 public class PictureGeometry {
@@ -29,10 +29,12 @@ public class PictureGeometry {
 		return comparator;
 	}
 	
-	public RectangleSize getPictureSize(Path imagePath) throws IOException {
+	public RectangleSize getPictureSize(Path imagePath) throws IOException, CvException {
 		
-		Mat im = Imgcodecs.imread(imagePath.toString());
-		return new RectangleSize(im.width(), im.height());
+		Mat im = PictureReader.readPictureFile(imagePath);
+		RectangleSize result = new RectangleSize(im.width(), im.height());
+		im.release();
+		return result;
 		
 	}
 	
@@ -41,11 +43,11 @@ public class PictureGeometry {
 		return Files.size(imagePath);
 	}
 
-	public BigInteger getPHash(Path imagePath) throws IOException {
+	public BigInteger getPHash(Path imagePath) throws IOException, CvException {
 		
 		System.out.println(imagePath.toString());
 		
-		Mat im = Imgcodecs.imread(imagePath.toString());
+		Mat im = PictureReader.readPictureFile(imagePath);
 		if (im == null) {
 			System.out.println(String.format("skip:%s", imagePath.toString()));
 			return BigInteger.valueOf(0);
@@ -53,9 +55,11 @@ public class PictureGeometry {
 		
 		Mat small = new Mat(HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, CvType.CV_8UC3);
 		Imgproc.resize(im, small, new Size(16, 16));
+		im.release();
 		
 		Mat dst = new Mat(HASH_PICTURE_SIZE, HASH_PICTURE_SIZE, CvType.CV_8UC1);
 		Imgproc.cvtColor(small, dst, Imgproc.COLOR_RGB2GRAY);
+		small.release();
 
 		List<Integer> grayScaleList = new ArrayList<>();
 		
@@ -64,6 +68,8 @@ public class PictureGeometry {
 				grayScaleList.add(((int) dst.get(y, x)[0]) & 0xFF);
 			}
 		}
+		
+		dst.release();
 		
 		double graySum = grayScaleList.stream().collect(Collectors.averagingInt(i -> i));
 		int cutGray = (int) graySum;

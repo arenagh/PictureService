@@ -119,8 +119,8 @@ public class PictureInfoRepository {
 		return folderBase + currentSuffix;
 	}
 
-	public void addPictureInfo(String folder, PictureInfo info) {
-		infoMap.get(folder).add(info);
+	public void addPictureInfo(String tag, PictureInfo info) {
+		infoMap.get(tag).add(info);
 	}
 
 	public void store(String tag) throws IOException { // metaファイルがtag別なのは便宜上
@@ -132,6 +132,10 @@ public class PictureInfoRepository {
 			Path meta = metaRoot.resolve(tag);
 			Files.write(meta, lines);
 		}
+	}
+
+	public void removePictureInfo(String tag, PictureInfo info) {
+		infoMap.get(tag).remove(info);
 	}
 }
  

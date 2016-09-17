@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.opencv.core.CvException;
 
 public class MetafileGenerator {
 
@@ -63,6 +66,25 @@ public class MetafileGenerator {
 		}
 	}
 	
+	public void migrate() {
+		synchronized (this) {
+			if (running) {
+				return;
+			}
+			running = true;
+			progress = 0;
+		}
+		
+		migrateMetaFiles(infoRepository, picRepository);
+		progress = FULL_PROGRESS_PER_REPO;
+		migrateMetaFiles(tmpInfoRepository, tmpPicRepository);
+		progress = FULL_PROGRESS_PER_REPO * 2;
+		
+		synchronized (this) {
+			running = false;
+		}
+	}
+
 	private void genMetaFiles(PictureInfoRepository infoRepo, PictureRepository picRepo) {
 		int baseProgress = progress;
 		List<String> tagList = infoRepo.getTagList();
@@ -97,8 +119,12 @@ public class MetafileGenerator {
 			try {
 				String tag = entry.getKey();
 				for (PictureInfo pInfo : entry.getValue()) {
-					pInfo.setPHash(PictureGeometry.getGeometrer().getPHash(picRepo.getPath(pInfo.getFileId())));
-					infoRepo.addPictureInfo(tag, pInfo);
+					try {
+						pInfo.setPHash(PictureGeometry.getGeometrer().getPHash(picRepo.getPath(pInfo.getFileId())));
+						infoRepo.addPictureInfo(tag, pInfo);
+					} catch (CvException e) {
+						System.out.println(String.format("invalid file(fileID):%s skipped...", pInfo.getFileId()));
+					}
 					// progress advanced
 					doneCount++;
 					progress = baseProgress + (FULL_PROGRESS_PER_REPO * doneCount) / fileCount;
@@ -118,6 +144,70 @@ public class MetafileGenerator {
 		}
 	}
 	
+	private void migrateMetaFiles(PictureInfoRepository infoRepo, PictureRepository picRepo) {
+		int baseProgress = progress;
+		List<String> tagList = infoRepo.getTagList();
+		Map<String, Map<String, PictureInfo>> pictureInfoMap = new HashMap<>();
+		Map<String, List<Path>> pathMap = new HashMap<>();
+		for (String tag : tagList) {
+			try {
+				infoRepo.loadPictureInfoList(tag);
+				pictureInfoMap.put(tag, infoRepo.getPictureInfos(tag).stream().collect(Collectors.toMap(PictureInfo::getFileId, Function.identity())));
+				
+				List<Path> dirList = getChildList(Files.newDirectoryStream(picRepo.getRoot(), tag + "*"));
+				List<Path> pathList = new ArrayList<>();
+				
+				for (Path dir : dirList) {
+					pathList.addAll(getChildList(Files.newDirectoryStream(dir)).stream().filter(p -> PictureInfo.isPictureFile(p.toString())).collect(Collectors.toList()));
+				}
+				pathMap.put(tag, pathList);
+			} catch (IOException e) {
+			}
+		}
+		
+		int fileCount = pictureInfoMap.entrySet().stream().mapToInt(e -> e.getValue().size()).sum();
+		if (fileCount == 0) {
+			progress += FULL_PROGRESS_PER_REPO;
+			return;
+		}
+		int doneCount = 0;
+		
+		for (Map.Entry<String, List<Path>> entry : pathMap.entrySet()) {
+			String tag = entry.getKey();
+			Map<String, PictureInfo> tagPictureInfoMap = pictureInfoMap.get(tag);
+			try {
+				for (Path path : entry.getValue()) {
+					String fileId = PictureRepository.getFileId(path);
+					PictureInfo newInfo = null;
+					
+					try {
+						PictureGeometry geom = PictureGeometry.getGeometrer();
+						RectangleSize picSize = geom.getPictureSize(path);
+						long fileSize = geom.getFileSize(path);
+						
+						if (tagPictureInfoMap.containsKey(fileId)) {
+							PictureInfo info = tagPictureInfoMap.get(fileId);
+							newInfo = info.patch(null, null, null, picSize, fileSize, null);
+							infoRepo.removePictureInfo(tag, info);
+						} else {
+							newInfo = genPictureInfo(path, tag);
+						}
+						newInfo.setPHash(geom.getPHash(path));
+						infoRepo.addPictureInfo(tag, newInfo);
+					} catch (CvException e) {
+						System.out.println(String.format("invalid file(fileID):%s skipped...", fileId));
+					}
+					
+					doneCount++;
+					progress = baseProgress + (FULL_PROGRESS_PER_REPO * doneCount) / fileCount;
+				}
+
+				infoRepo.store(tag);
+			} catch(IOException e) {
+			}
+		}
+	}
+
 	public synchronized int getProgress() {
 		return progress;
 	}
@@ -131,10 +221,7 @@ public class MetafileGenerator {
 	
 	private PictureInfo genPictureInfo(Path path, String tag) {
 
-		String filename = path.getFileName().toString();
-		String folderName = path.getParent().getFileName().toString();
-		
-		String fileId = String.format("%s/%s", folderName, filename);
+		String fileId = PictureRepository.getFileId(path);
 
 		Instant time = null;
 		BasicFileAttributes attrs;
