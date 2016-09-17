@@ -11,5 +11,10 @@ public class SimpleInvocationBuilderGenerator implements InvocationBuilderGenera
 	public Invocation.Builder generate(Client client, URI uri) {
 		return client.target(uri).request();
 	}
+	
+	@Override
+	public URI getReferer() {
+		return null;
+	}
 
 }

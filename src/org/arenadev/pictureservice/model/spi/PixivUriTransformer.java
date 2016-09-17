@@ -1,6 +1,7 @@
 package org.arenadev.pictureservice.model.spi;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +14,8 @@ public class PixivUriTransformer extends SimpleInvocationBuilderGenerator implem
 
 	private static Pattern numeric = Pattern.compile("[0-9]*");
 	
+	private URI referer = null;
+	
 	@Override
 	public Invocation.Builder generate(Client client, URI uri) {
 		Invocation.Builder builder = super.generate(client, uri);
@@ -22,9 +25,20 @@ public class PixivUriTransformer extends SimpleInvocationBuilderGenerator implem
 		Matcher matcher = numeric.matcher(uriName);
 		matcher.find();
 		String id = matcher.group();
-		builder.header("Referer", "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id);
+		String refererStr = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id;
+		builder.header("Referer", refererStr);
+		try {
+			referer = new URI(refererStr);
+		} catch (URISyntaxException e) {
+			referer = null;
+		}
 
 		return builder;
+	}
+	
+	@Override
+	public URI getReferer() {
+		return referer;
 	}
 
 	@Override

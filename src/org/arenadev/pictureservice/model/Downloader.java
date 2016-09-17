@@ -44,7 +44,12 @@ public class Downloader {
 		
 		Files.move(downloadedFile, dest);
 		
-		return PictureInfo.getPictureInfo(String.format("%s/%s", folder, name), uri, timestamp, Instant.now(), folder);
+		PictureGeometry geometrer = PictureGeometry.getGeometrer();
+		
+		PictureInfo info = PictureInfo.getPictureInfo(String.format("%s/%s", folder, name), uri, timestamp, Instant.now(), geometrer.getPictureSize(dest), geometrer.getFileSize(dest), transformer.getReferer(), folder);
+		info.setPHash(geometrer.getPHash(dest));
+
+		return info;
 	}
 
 	private static String altName(String filename) {

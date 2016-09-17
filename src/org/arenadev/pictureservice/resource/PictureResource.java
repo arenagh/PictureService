@@ -16,6 +16,7 @@ import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureReader;
 import org.arenadev.pictureservice.model.PictureRepository;
+import org.opencv.core.CvException;
 
 @Path("picture")
 public class PictureResource {
@@ -56,6 +57,8 @@ public class PictureResource {
 			throw new WebApplicationException(Status.NOT_FOUND);
 		} catch(FileIsDirectoryException e) {
 			throw new WebApplicationException(e, Response.status(Status.FORBIDDEN).entity(String.format("\"%s\" is a directory.", id)).build());
+		} catch (CvException e) {
+			throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST).entity(String.format("\"%s\" is a wrong file.", id)).build());
 		}
 		return result.build();
 	}

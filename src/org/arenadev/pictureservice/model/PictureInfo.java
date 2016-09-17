@@ -20,10 +20,14 @@ public class PictureInfo {
 	private Instant created;
 	private Instant downloaded;
 	private URI source;
+	private RectangleSize pictureSize;
+	private long size;
 	private BigInteger pHash;
 	private List<String> tags;
+	private String description;
+	private URI referer;
 	
-	private PictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, String... tagArray) {
+	private PictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
 		this();
 		
 		fileId = id;
@@ -31,17 +35,33 @@ public class PictureInfo {
 		source = src;
 		created = createdTime;
 		downloaded = downloadedTime;
+		pictureSize = picSize;
+		size = fileSize;
+		referer = ref;
 		pHash = null;
 		
 		Arrays.stream(tagArray).forEach(t -> tags.add(t));
+		
+		description = null;
 	}
 	
 	public PictureInfo() {
 		tags= new ArrayList<>();
 	}
 	
-	public static PictureInfo getPictureInfo(String id, URI source, Instant createdTime, Instant downloadedTime, String... tagArray) {
-		return new PictureInfo(id, source, createdTime, downloadedTime, tagArray);
+	public static PictureInfo getPictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
+		return new PictureInfo(id, src, createdTime, downloadedTime, picSize, fileSize, ref, tagArray);
+	}
+	
+	public PictureInfo patch(URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, Long fileSize, URI ref) {
+		URI newSource = (src == null) ? source : src;
+		Instant newCreatedTime = (createdTime == null) ? created : createdTime;
+		Instant newDownloadedTime = (downloadedTime == null) ? downloaded : downloadedTime;
+		RectangleSize newPicSize = (picSize == null) ? pictureSize : picSize;
+		long newFileSize = (fileSize == null) ? size : fileSize;
+		URI newRef = (ref == null) ? referer : ref;
+		
+		return new PictureInfo(fileId, newSource, newCreatedTime, newDownloadedTime, newPicSize, newFileSize, newRef, tags.toArray(new String[0]));
 	}
 
 	public static boolean isPictureFile(String filename) {
@@ -65,11 +85,19 @@ public class PictureInfo {
 		return source;
 	}
 
+	public RectangleSize getPictureSize() {
+		return pictureSize;
+	}
+
+	public long getSize() {
+		return size;
+	}
+
 	public BigInteger getPHash() {
 		return pHash;
 	}
 	
-	public void setPHash(BigInteger ph) {
+ 	public void setPHash(BigInteger ph) {
 		pHash = ph;
 	}
 	
@@ -94,6 +122,18 @@ public class PictureInfo {
 		tags.clear();
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public URI getReferer() {
+		return referer;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(fileId);

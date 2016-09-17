@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opencv.core.CvException;
+
 public class ThumbnailGenerator {
 	
 	private static ThumbnailGenerator thumbnailGenerator = new ThumbnailGenerator();
@@ -53,7 +55,11 @@ public class ThumbnailGenerator {
 		
 		int count = 0;
 		for (PictureInfo info : totalInfo) {
-			PictureMagnifier.getMaker().makeThumbnail(info, picRepository);
+			try {
+				PictureMagnifier.getMaker().makeThumbnail(info, picRepository);
+			} catch (CvException e) {
+				System.out.println(String.format("Thumbnail generation failed(fileID):%s", info.getFileId()));
+			}
 			count++;
 			synchronized (this) {
 				progress = count / totalCount;

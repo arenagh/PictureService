@@ -13,11 +13,11 @@ import javax.ws.rs.PathParam;
 import org.arenadev.pictureservice.model.Downloader;
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.LastDownloadedPictureInfoRepository;
-import org.arenadev.pictureservice.model.PictureComparator;
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureRepository;
+import org.opencv.core.CvException;
 
 @Path("folder")
 public class FolderResource {
@@ -48,12 +48,11 @@ public class FolderResource {
 					java.nio.file.Path path = pRepository.getPath(fileId);
 					URI uri = new URI(urlLine);
 					PictureInfo info = Downloader.downloadFile(path, uri, folder);
-					info.setPHash(PictureComparator.getComparator().getPHash(path));
 					PictureMagnifier.getMaker().makeThumbnail(info, pRepository);
 					infoRepository.addPictureInfo(folder, info);
 					infoRepository.store(folder);
 					dRepository.addPictureInfo(info);
-				} catch (URISyntaxException | IOException | FileIsDirectoryException e) {
+				} catch (URISyntaxException | IOException | FileIsDirectoryException | CvException e) {
 					continue;
 				}
 			}
