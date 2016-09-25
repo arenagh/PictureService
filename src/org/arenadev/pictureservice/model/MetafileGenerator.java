@@ -121,6 +121,9 @@ public class MetafileGenerator {
 				for (PictureInfo pInfo : entry.getValue()) {
 					try {
 						pInfo.setPHash(PictureGeometry.getGeometrer().getPHash(picRepo.getPath(pInfo.getFileId())));
+						if (pInfo.getTagList().size() == 0) {
+							pInfo.addTag(tag);
+						}
 						infoRepo.addPictureInfo(tag, pInfo);
 					} catch (CvException e) {
 						System.out.println(String.format("invalid file(fileID):%s skipped...", pInfo.getFileId()));
@@ -188,6 +191,9 @@ public class MetafileGenerator {
 						if (tagPictureInfoMap.containsKey(fileId)) {
 							PictureInfo info = tagPictureInfoMap.get(fileId);
 							newInfo = info.patch(null, null, null, picSize, fileSize, null);
+							if (newInfo.getTagList().size() == 0) {
+								newInfo.addTag(tag);
+							}
 							infoRepo.removePictureInfo(tag, info);
 						} else {
 							newInfo = genPictureInfo(path, tag);
@@ -241,5 +247,27 @@ public class MetafileGenerator {
 		}
 		
 		return PictureInfo.getPictureInfo(fileId, null, time, time, picSize, size, null, tag);
+	}
+
+	public void putTags() {
+		
+		addTags(infoRepository);
+		addTags(tmpInfoRepository);
+		
+		
+	}
+
+	private void addTags(PictureInfoRepository infoRepo) {
+
+		List<String> tagList = infoRepo.getTagList();
+		for (String tag : tagList) {
+			try {
+				infoRepo.loadPictureInfoList(tag);
+				infoRepo.getPictureInfos(tag).stream().filter(p -> p.getTagList().size() == 0).forEach(p -> p.addTag(tag));
+				infoRepo.store(tag);
+			} catch (IOException e) {
+			}
+		}
+
 	}
 }

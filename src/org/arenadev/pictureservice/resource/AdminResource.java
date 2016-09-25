@@ -99,4 +99,12 @@ public class AdminResource {
 	}
 
 
+	@Path("tags")
+	@POST
+	public Response putTags() {
+		
+		mGen.putTags();
+		
+		return Response.ok().build();
+	}
 }
