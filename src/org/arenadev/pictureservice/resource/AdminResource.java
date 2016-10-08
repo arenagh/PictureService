@@ -107,4 +107,12 @@ public class AdminResource {
 		
 		return Response.ok().build();
 	}
+	
+	@Path("tmp")
+	@POST
+	public Response putTemporary() {
+		mGen.putTmp();
+		
+		return Response.ok().build();
+	}
 }

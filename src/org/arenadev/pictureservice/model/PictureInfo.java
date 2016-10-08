@@ -26,8 +26,9 @@ public class PictureInfo {
 	private List<String> tags;
 	private String description;
 	private URI referer;
+	private boolean temporary;
 	
-	private PictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
+	private PictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, boolean tmp, String... tagArray) {
 		this();
 		
 		fileId = id;
@@ -43,6 +44,7 @@ public class PictureInfo {
 		Arrays.stream(tagArray).forEach(t -> tags.add(t));
 		
 		description = null;
+		temporary = tmp;
 	}
 	
 	public PictureInfo() {
@@ -50,18 +52,23 @@ public class PictureInfo {
 	}
 	
 	public static PictureInfo getPictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
-		return new PictureInfo(id, src, createdTime, downloadedTime, picSize, fileSize, ref, tagArray);
+		return new PictureInfo(id, src, createdTime, downloadedTime, picSize, fileSize, ref, true, tagArray);
 	}
 	
-	public PictureInfo patch(URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, Long fileSize, URI ref) {
+	public static PictureInfo getTmpPictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
+		return new PictureInfo(id, src, createdTime, downloadedTime, picSize, fileSize, ref, true, tagArray);
+	}
+	
+	public PictureInfo patch(URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, Long fileSize, URI ref, Boolean tmp) {
 		URI newSource = (src == null) ? source : src;
 		Instant newCreatedTime = (createdTime == null) ? created : createdTime;
 		Instant newDownloadedTime = (downloadedTime == null) ? downloaded : downloadedTime;
 		RectangleSize newPicSize = (picSize == null) ? pictureSize : picSize;
 		long newFileSize = (fileSize == null) ? size : fileSize;
 		URI newRef = (ref == null) ? referer : ref;
+		boolean newTmp = (tmp == null) ? temporary : tmp;
 		
-		return new PictureInfo(fileId, newSource, newCreatedTime, newDownloadedTime, newPicSize, newFileSize, newRef, tags.toArray(new String[0]));
+		return new PictureInfo(fileId, newSource, newCreatedTime, newDownloadedTime, newPicSize, newFileSize, newRef, newTmp, tags.toArray(new String[0]));
 	}
 
 	public static boolean isPictureFile(String filename) {
@@ -132,6 +139,14 @@ public class PictureInfo {
 
 	public URI getReferer() {
 		return referer;
+	}
+
+	public boolean isTemporary() {
+		return temporary;
+	}
+	
+	public void setTemporary(boolean tmp) {
+		temporary = tmp;
 	}
 
 	@Override
