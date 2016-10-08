@@ -75,9 +75,9 @@ public class MetafileGenerator {
 			progress = 0;
 		}
 		
-		migrateMetaFiles(infoRepository, picRepository);
+		migrateMetaFiles(infoRepository, picRepository, false);
 		progress = FULL_PROGRESS_PER_REPO;
-		migrateMetaFiles(tmpInfoRepository, tmpPicRepository);
+		migrateMetaFiles(tmpInfoRepository, tmpPicRepository, true);
 		progress = FULL_PROGRESS_PER_REPO * 2;
 		
 		synchronized (this) {
@@ -147,7 +147,7 @@ public class MetafileGenerator {
 		}
 	}
 	
-	private void migrateMetaFiles(PictureInfoRepository infoRepo, PictureRepository picRepo) {
+	private void migrateMetaFiles(PictureInfoRepository infoRepo, PictureRepository picRepo, boolean tmp) {
 		int baseProgress = progress;
 		List<String> tagList = infoRepo.getTagList();
 		Map<String, Map<String, PictureInfo>> pictureInfoMap = new HashMap<>();
@@ -190,7 +190,7 @@ public class MetafileGenerator {
 						
 						if (tagPictureInfoMap.containsKey(fileId)) {
 							PictureInfo info = tagPictureInfoMap.get(fileId);
-							newInfo = info.patch(null, null, null, picSize, fileSize, null);
+							newInfo = info.patch(null, null, null, picSize, fileSize, null, tmp);
 							if (newInfo.getTagList().size() == 0) {
 								newInfo.addTag(tag);
 							}
@@ -264,6 +264,27 @@ public class MetafileGenerator {
 			try {
 				infoRepo.loadPictureInfoList(tag);
 				infoRepo.getPictureInfos(tag).stream().filter(p -> p.getTagList().size() == 0).forEach(p -> p.addTag(tag));
+				infoRepo.store(tag);
+			} catch (IOException e) {
+			}
+		}
+
+	}
+
+	public void putTmp() {
+		
+		setTmp(infoRepository, false);
+		setTmp(tmpInfoRepository, true);
+		
+	}
+
+	private void setTmp(PictureInfoRepository infoRepo, boolean tmp) {
+
+		List<String> tagList = infoRepo.getTagList();
+		for (String tag : tagList) {
+			try {
+				infoRepo.loadPictureInfoList(tag);
+				infoRepo.getPictureInfos(tag).stream().filter(p -> p.getTagList().size() == 0).forEach(p -> p.setTemporary(tmp));
 				infoRepo.store(tag);
 			} catch (IOException e) {
 			}
