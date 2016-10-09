@@ -24,6 +24,8 @@ public class PictureInfo {
 	private long size;
 	private BigInteger pHash;
 	private List<String> tags;
+	private String title;
+	private String author;
 	private String description;
 	private URI referer;
 	private boolean temporary;
@@ -129,6 +131,22 @@ public class PictureInfo {
 		tags.clear();
 	}
 	
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
 	public String getDescription() {
 		return description;
 	}
