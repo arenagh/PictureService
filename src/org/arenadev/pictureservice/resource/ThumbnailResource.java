@@ -1,6 +1,7 @@
 package org.arenadev.pictureservice.resource;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -8,18 +9,21 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.arenadev.pictureservice.model.PictureRepository;
-import org.arenadev.pictureservice.model.spi.FilePictureRepository;
+import org.arenadev.pictureservice.model.RepositoryFactory;
 
 @Path("thumbnail")
 public class ThumbnailResource {
 	
 	public static final MimetypesFileTypeMap MIME_MAP = new MimetypesFileTypeMap();
 
+	@Inject
+	private RepositoryFactory repoFactory;
+
 	@GET
 	@Path("tmp/{id:.+}")
 	public Response downloadTmpThumbnails(@PathParam("id") String id) {
 		
-		return makeResponceForThumbnail(id, FilePictureRepository.getTmpRepository());
+		return makeResponceForThumbnail(id, repoFactory.getTmpPictureRepository());
 		
 	}
 	
@@ -27,7 +31,7 @@ public class ThumbnailResource {
 	@Path("{id:.+}")
 	public Response downloadThumbnails(@PathParam("id") String id) {
 		
-		return makeResponceForThumbnail(id, FilePictureRepository.getRepository());
+		return makeResponceForThumbnail(id, repoFactory.getPictureRepository());
 		
 	}
 

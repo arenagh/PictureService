@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -17,19 +18,21 @@ import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureRepository;
-import org.arenadev.pictureservice.model.spi.FilePictureInfoRepository;
-import org.arenadev.pictureservice.model.spi.FilePictureRepository;
+import org.arenadev.pictureservice.model.RepositoryFactory;
 import org.opencv.core.CvException;
 
 @Path("folder")
 public class FolderResource {
-	
+
+	@Inject
+	private RepositoryFactory repoFactory;
+
 	@POST
 	@Path("download_tmp/{folder}")
 	public void downloadPictures(@PathParam("folder") String folder, List<String> urlStrList) throws IOException {
 		
-		PictureRepository pRepository = FilePictureRepository.getTmpRepository();
-		PictureInfoRepository infoRepository = FilePictureInfoRepository.getTmpRepository();
+		PictureRepository pRepository = repoFactory.getTmpPictureRepository();
+		PictureInfoRepository infoRepository = repoFactory.getTmpPictureInfoRepository();
 		LastDownloadedPictureInfoRepository dRepository = LastDownloadedPictureInfoRepository.getRepository();
 		
 		synchronized (dRepository) {

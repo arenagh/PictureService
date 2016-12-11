@@ -3,6 +3,7 @@ package org.arenadev.pictureservice.resource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -16,19 +17,22 @@ import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureReader;
 import org.arenadev.pictureservice.model.PictureRepository;
-import org.arenadev.pictureservice.model.spi.FilePictureRepository;
+import org.arenadev.pictureservice.model.RepositoryFactory;
 import org.opencv.core.CvException;
 
 @Path("picture")
 public class PictureResource {
 	
+	@Inject
+	private RepositoryFactory repoFactory;
+
 //	public static final MimetypesFileTypeMap MIME_MAP = new MimetypesFileTypeMap();
 
 	@GET
 	@Path("tmp/{id:.+}")
 	public Response getTmpPicture(@PathParam("id") String id, @QueryParam("width") Integer width, @QueryParam("height") Integer height) throws IOException {
 
-		return makeResponceForPicture(id, FilePictureRepository.getTmpRepository(), width, height);
+		return makeResponceForPicture(id, repoFactory.getTmpPictureRepository(), width, height);
 
 	}
 
@@ -36,7 +40,7 @@ public class PictureResource {
 	@Path("{id:.+}")
 	public Response getPicture(@PathParam("id") String id, @QueryParam("width") Integer width, @QueryParam("height") Integer height) throws IOException {
 
-		return makeResponceForPicture(id, FilePictureRepository.getRepository(), width, height);
+		return makeResponceForPicture(id, repoFactory.getPictureRepository(), width, height);
 
 	}
 
