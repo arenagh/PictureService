@@ -23,7 +23,7 @@ public class PictureInfo {
 	private RectangleSize pictureSize;
 	private long size;
 	private BigInteger pHash;
-	private List<String> tags;
+	private List<String> tagList;
 	private String title;
 	private String author;
 	private String description;
@@ -43,14 +43,14 @@ public class PictureInfo {
 		referer = ref;
 		pHash = null;
 		
-		Arrays.stream(tagArray).forEach(t -> tags.add(t));
+		Arrays.stream(tagArray).forEach(t -> tagList.add(t));
 		
 		description = null;
 		temporary = tmp;
 	}
 	
 	public PictureInfo() {
-		tags= new ArrayList<>();
+		tagList= new ArrayList<>();
 	}
 	
 	public static PictureInfo getPictureInfo(String id, URI src, Instant createdTime, Instant downloadedTime, RectangleSize picSize, long fileSize, URI ref, String... tagArray) {
@@ -70,7 +70,7 @@ public class PictureInfo {
 		URI newRef = (ref == null) ? referer : ref;
 		boolean newTmp = (tmp == null) ? temporary : tmp;
 		
-		return new PictureInfo(fileId, newSource, newCreatedTime, newDownloadedTime, newPicSize, newFileSize, newRef, newTmp, tags.toArray(new String[0]));
+		return new PictureInfo(fileId, newSource, newCreatedTime, newDownloadedTime, newPicSize, newFileSize, newRef, newTmp, tagList.toArray(new String[0]));
 	}
 
 	public static boolean isPictureFile(String filename) {
@@ -111,24 +111,24 @@ public class PictureInfo {
 	}
 	
 	public List<String> getTagList() {
-		return Collections.unmodifiableList(tags);
+		return Collections.unmodifiableList(tagList);
 	}
 	
 	public void setTagList(List<String> tags) {
-		tags.clear();
-		tags.addAll(tags);
+		tagList.clear();
+		tagList.addAll(tags);
 	}
 	
 	public void addTag(String... tag) {
-		tags.addAll(Arrays.asList(tag));
+		tagList.addAll(Arrays.asList(tag));
 	}
 	
 	public void removeTag(String... tag) {
-		tags.removeAll(Arrays.asList(tag));
+		tagList.removeAll(Arrays.asList(tag));
 	}
 	
 	public void clearTags() {
-		tags.clear();
+		tagList.clear();
 	}
 	
 	public String getTitle() {

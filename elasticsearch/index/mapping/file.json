@@ -1,0 +1,12 @@
+{
+	"properties": {
+		"file": {
+			"type": "keyword",
+			"index": "false"
+		},
+		"thumbnail": {
+			"type": "keyword",
+			"index": "false"
+		}
+	}
+}

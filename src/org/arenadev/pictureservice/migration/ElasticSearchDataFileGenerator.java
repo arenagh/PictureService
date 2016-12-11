@@ -1,7 +1,9 @@
 package org.arenadev.pictureservice.migration;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
@@ -28,6 +30,8 @@ public class ElasticSearchDataFileGenerator {
 	private PictureRepository tmpPicRepository;
 	
 	private ObjectMapper mapper;
+	
+	private Set<String> usedNames;
 	
 	public ElasticSearchDataFileGenerator() {
 		
@@ -56,6 +60,7 @@ public class ElasticSearchDataFileGenerator {
 		}
 		
 		List<String> result = new ArrayList<>();
+		usedNames = new HashSet<>();
 		for (PictureInfo info : infos) {
 			String fileId = info.getFileId();
 			String elasticId = genId(fileId);
@@ -70,7 +75,16 @@ public class ElasticSearchDataFileGenerator {
 
 	private String genId(String fileId) {
 		
-		return fileId.replaceAll("_", "__").replaceAll("/", "_");
+		String name = fileId.replaceAll(" ", "").replaceAll("\"", "").replaceAll("/", "");
+
+		String curName = name;
+		for (int i = 1 ; usedNames.contains(curName) ; i++) {
+			curName = name + "_" + i;
+		}
+		usedNames.add(curName);
+		
+		return curName;
+		
 	}
 	
 }

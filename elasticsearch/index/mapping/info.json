@@ -1,0 +1,60 @@
+{
+	"properties": {
+		"fileId": {
+			"type": "keyword",
+			"index": "false"
+		},
+		"created": {
+			"type": "date",
+			"format": "date_time||date_time_no_millis"
+		},
+		"downloaded": {
+			"type": "date",
+			"format": "date_time||date_time_no_millis"
+		},
+		"source": {
+			"type": "keyword",
+			"index": "false"
+		},
+		"pictureSize": {
+			"properties": {
+				"width": {
+					"type": "integer"
+				},
+				"height": {
+					"type": "integer"
+				}
+			}
+		},
+		"size": {
+			"type": "long"
+		},
+		"title": {
+			"type": "text",
+			"index": "true"
+		},
+		"author": {
+			"type": "keyword",
+			"index": "true"
+		},
+		"description": {
+			"type": "text",
+			"index": "true"
+		},
+		"referer": {
+			"type": "keyword",
+			"index": "false"
+		},
+		"temporary": {
+			"type": "boolean"
+		},
+		"phash": {
+			"type": "keyword",
+			"index": "false"
+		},
+		"tagList": {
+			"type": "keyword",
+			"index": "true"
+		}
+	}
+}
