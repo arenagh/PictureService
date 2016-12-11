@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.arenadev.pictureservice.model.spi.FilePictureInfoRepository;
+import org.arenadev.pictureservice.model.spi.FilePictureRepository;
 import org.opencv.core.CvException;
 
 public class MetafileGenerator {
@@ -32,11 +34,11 @@ public class MetafileGenerator {
 	private volatile int progress = 0;
 	
 	private MetafileGenerator() {
-		infoRepository = PictureInfoRepository.getRepository();
-		picRepository = PictureRepository.getRepository();
+		infoRepository = FilePictureInfoRepository.getRepository();
+		picRepository = FilePictureRepository.getRepository();
 
-		tmpInfoRepository = PictureInfoRepository.getTmpRepository();
-		tmpPicRepository = PictureRepository.getTmpRepository();
+		tmpInfoRepository = FilePictureInfoRepository.getTmpRepository();
+		tmpPicRepository = FilePictureRepository.getTmpRepository();
 	}
 
 	public static MetafileGenerator getGenerator() {
@@ -180,7 +182,7 @@ public class MetafileGenerator {
 			Map<String, PictureInfo> tagPictureInfoMap = pictureInfoMap.get(tag);
 			try {
 				for (Path path : entry.getValue()) {
-					String fileId = PictureRepository.getFileId(path);
+					String fileId = FilePictureRepository.getFileId(path);
 					PictureInfo newInfo = null;
 					
 					try {
@@ -227,7 +229,7 @@ public class MetafileGenerator {
 	
 	private PictureInfo genPictureInfo(Path path, String tag) {
 
-		String fileId = PictureRepository.getFileId(path);
+		String fileId = FilePictureRepository.getFileId(path);
 
 		Instant time = null;
 		BasicFileAttributes attrs;

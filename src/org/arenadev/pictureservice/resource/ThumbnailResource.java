@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.arenadev.pictureservice.model.PictureRepository;
+import org.arenadev.pictureservice.model.spi.FilePictureRepository;
 
 @Path("thumbnail")
 public class ThumbnailResource {
@@ -18,7 +19,7 @@ public class ThumbnailResource {
 	@Path("tmp/{id:.+}")
 	public Response downloadTmpThumbnails(@PathParam("id") String id) {
 		
-		return makeResponceForThumbnail(id, PictureRepository.getTmpRepository());
+		return makeResponceForThumbnail(id, FilePictureRepository.getTmpRepository());
 		
 	}
 	
@@ -26,7 +27,7 @@ public class ThumbnailResource {
 	@Path("{id:.+}")
 	public Response downloadThumbnails(@PathParam("id") String id) {
 		
-		return makeResponceForThumbnail(id, PictureRepository.getRepository());
+		return makeResponceForThumbnail(id, FilePictureRepository.getRepository());
 		
 	}
 

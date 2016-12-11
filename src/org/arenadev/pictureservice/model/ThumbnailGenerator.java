@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.arenadev.pictureservice.model.spi.FilePictureInfoRepository;
+import org.arenadev.pictureservice.model.spi.FilePictureRepository;
 import org.opencv.core.CvException;
 
 public class ThumbnailGenerator {
@@ -20,11 +22,11 @@ public class ThumbnailGenerator {
 	private int progress = 0;
 	
 	private ThumbnailGenerator() {
-		infoRepository = PictureInfoRepository.getRepository();
-		picRepository = PictureRepository.getRepository();
+		infoRepository = FilePictureInfoRepository.getRepository();
+		picRepository = FilePictureRepository.getRepository();
 
-		tmpInfoRepository = PictureInfoRepository.getTmpRepository();
-		tmpPicRepository = PictureRepository.getTmpRepository();
+		tmpInfoRepository = FilePictureInfoRepository.getTmpRepository();
+		tmpPicRepository = FilePictureRepository.getTmpRepository();
 	}
 
 	public static ThumbnailGenerator getGenerator() {

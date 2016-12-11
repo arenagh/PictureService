@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.arenadev.pictureservice.model.LastDownloadedPictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureInfo;
-import org.arenadev.pictureservice.model.PictureInfoRepository;
+import org.arenadev.pictureservice.model.spi.FilePictureInfoRepository;
 
 @Path("info")
 public class PictureInfoResource {
@@ -21,7 +21,7 @@ public class PictureInfoResource {
 	@Path("list/{folder}")
 	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 	public List<PictureInfo> getPictureInfoListByFoler(@PathParam("folder") String folder) throws IOException {
-		return PictureInfoRepository.getRepository().getPictureInfos(folder);
+		return FilePictureInfoRepository.getRepository().getPictureInfos(folder);
 	}
 	
 	@GET
@@ -29,14 +29,14 @@ public class PictureInfoResource {
 	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 	public List<PictureInfo> getPictureInfoList(@QueryParam("tag") List<String> tagList) throws IOException {
 		// TODO 複数対応
-		return PictureInfoRepository.getRepository().getPictureInfos(tagList.get(0));
+		return FilePictureInfoRepository.getRepository().getPictureInfos(tagList.get(0));
 	}
 
 	@GET
 	@Path("tmp/list/{folder}")
 	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 	public List<PictureInfo> getPictureInfoTmpListByFoler(@PathParam("folder") String folder) throws IOException {
-		return PictureInfoRepository.getTmpRepository().getPictureInfos(folder);
+		return FilePictureInfoRepository.getTmpRepository().getPictureInfos(folder);
 	}
 
 	@GET
@@ -44,7 +44,7 @@ public class PictureInfoResource {
 	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 	public List<PictureInfo> getPictureInfoTmpList(@QueryParam("tag") List<String> tagList) throws IOException {
 		// TODO 複数対応
-		return PictureInfoRepository.getTmpRepository().getPictureInfos(tagList.get(0));
+		return FilePictureInfoRepository.getTmpRepository().getPictureInfos(tagList.get(0));
 	}
 
 	@GET

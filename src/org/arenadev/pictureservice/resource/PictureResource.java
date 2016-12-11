@@ -16,6 +16,7 @@ import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureReader;
 import org.arenadev.pictureservice.model.PictureRepository;
+import org.arenadev.pictureservice.model.spi.FilePictureRepository;
 import org.opencv.core.CvException;
 
 @Path("picture")
@@ -27,7 +28,7 @@ public class PictureResource {
 	@Path("tmp/{id:.+}")
 	public Response getTmpPicture(@PathParam("id") String id, @QueryParam("width") Integer width, @QueryParam("height") Integer height) throws IOException {
 
-		return makeResponceForPicture(id, PictureRepository.getTmpRepository(), width, height);
+		return makeResponceForPicture(id, FilePictureRepository.getTmpRepository(), width, height);
 
 	}
 
@@ -35,7 +36,7 @@ public class PictureResource {
 	@Path("{id:.+}")
 	public Response getPicture(@PathParam("id") String id, @QueryParam("width") Integer width, @QueryParam("height") Integer height) throws IOException {
 
-		return makeResponceForPicture(id, PictureRepository.getRepository(), width, height);
+		return makeResponceForPicture(id, FilePictureRepository.getRepository(), width, height);
 
 	}
 

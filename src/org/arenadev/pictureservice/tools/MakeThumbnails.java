@@ -11,6 +11,8 @@ import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureReader;
 import org.arenadev.pictureservice.model.PictureRepository;
+import org.arenadev.pictureservice.model.spi.FilePictureInfoRepository;
+import org.arenadev.pictureservice.model.spi.FilePictureRepository;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -22,12 +24,12 @@ public class MakeThumbnails {
 
 	public static void main(String[] args) throws IOException, FileIsDirectoryException {
 
-		PictureInfoRepository infoRepository = PictureInfoRepository.getRepository();
-		PictureRepository picRepository = PictureRepository.getRepository();
+		PictureInfoRepository infoRepository = FilePictureInfoRepository.getRepository();
+		PictureRepository picRepository = FilePictureRepository.getRepository();
 		generateThumbnails(infoRepository, picRepository);
 
-		PictureInfoRepository tmpInfoRepository = PictureInfoRepository.getTmpRepository();
-		PictureRepository tmpPicRepository = PictureRepository.getTmpRepository();
+		PictureInfoRepository tmpInfoRepository = FilePictureInfoRepository.getTmpRepository();
+		PictureRepository tmpPicRepository = FilePictureRepository.getTmpRepository();
 		generateThumbnails(tmpInfoRepository, tmpPicRepository);
 
 	}

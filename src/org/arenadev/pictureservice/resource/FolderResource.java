@@ -17,6 +17,8 @@ import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureRepository;
+import org.arenadev.pictureservice.model.spi.FilePictureInfoRepository;
+import org.arenadev.pictureservice.model.spi.FilePictureRepository;
 import org.opencv.core.CvException;
 
 @Path("folder")
@@ -26,8 +28,8 @@ public class FolderResource {
 	@Path("download_tmp/{folder}")
 	public void downloadPictures(@PathParam("folder") String folder, List<String> urlStrList) throws IOException {
 		
-		PictureRepository pRepository = PictureRepository.getTmpRepository();
-		PictureInfoRepository infoRepository = PictureInfoRepository.getTmpRepository();
+		PictureRepository pRepository = FilePictureRepository.getTmpRepository();
+		PictureInfoRepository infoRepository = FilePictureInfoRepository.getTmpRepository();
 		LastDownloadedPictureInfoRepository dRepository = LastDownloadedPictureInfoRepository.getRepository();
 		
 		synchronized (dRepository) {
