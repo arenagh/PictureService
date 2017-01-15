@@ -1,4 +1,4 @@
-package org.arenadev.pictureservice.model.spi;
+package org.arenadev.pictureservice.repository.file;
 
 import javax.enterprise.context.RequestScoped;
 

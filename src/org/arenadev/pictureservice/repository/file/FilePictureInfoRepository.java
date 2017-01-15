@@ -1,4 +1,4 @@
-package org.arenadev.pictureservice.model.spi;
+package org.arenadev.pictureservice.repository.file;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;

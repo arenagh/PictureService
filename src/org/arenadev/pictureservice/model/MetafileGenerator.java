@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.arenadev.pictureservice.model.spi.FilePictureInfoRepository;
-import org.arenadev.pictureservice.model.spi.FilePictureRepository;
+import org.arenadev.pictureservice.repository.file.FilePictureInfoRepository;
+import org.arenadev.pictureservice.repository.file.FilePictureRepository;
 import org.opencv.core.CvException;
 
 public class MetafileGenerator {

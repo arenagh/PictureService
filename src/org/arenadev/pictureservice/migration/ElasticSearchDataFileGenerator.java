@@ -8,8 +8,8 @@ import java.util.Set;
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureRepository;
-import org.arenadev.pictureservice.model.spi.FilePictureInfoRepository;
-import org.arenadev.pictureservice.model.spi.FilePictureRepository;
+import org.arenadev.pictureservice.repository.file.FilePictureInfoRepository;
+import org.arenadev.pictureservice.repository.file.FilePictureRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
