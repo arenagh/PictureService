@@ -10,5 +10,5 @@ dependencies {
   runtime 'org.slf4j:slf4j-simple:1.7.21'
   runtime 'com.fasterxml.jackson.core:jackson-databind:2.8.2'
   runtime 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.2'
-  runtime 'org.elasticsearch.client:rest:5.0.2'
+  runtime 'org.elasticsearch.client:rest:5.1.2'
 }
