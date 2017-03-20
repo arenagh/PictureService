@@ -1,14 +1,20 @@
 package org.arenadev.pictureservice.resource;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.arenadev.pictureservice.migration.ElasticSearchDataFileGenerator;
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.MetafileGenerator;
 import org.arenadev.pictureservice.model.ThumbnailGenerator;
@@ -115,4 +121,27 @@ public class AdminResource {
 		
 		return Response.ok().build();
 	}
+	
+	@Path("getData/tmp")
+	@GET
+	@Produces(MediaType.APPLICATION_OCTET_STREAM + "; charset=UTF-8")
+	public Reader getTmpData() throws Exception {
+		return getData(true);
+	}
+	
+	@Path("getData")
+	@GET
+	@Produces(MediaType.APPLICATION_OCTET_STREAM + "; charset=UTF-8")
+	public Reader getDataSaved() throws Exception {
+		return getData(false);
+	}
+	
+	public Reader getData(boolean tmp) throws Exception {
+		
+		ElasticSearchDataFileGenerator eGen = new ElasticSearchDataFileGenerator();
+		String data = eGen.gen(tmp).stream().collect(Collectors.joining(System.lineSeparator()));
+		
+		return new StringReader(data);
+	}
+
 }

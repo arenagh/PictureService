@@ -4,43 +4,45 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
+import org.arenadev.pictureservice.model.PathGenerator;
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureReader;
-import org.arenadev.pictureservice.model.PictureRepository;
+import org.arenadev.pictureservice.repository.file.FilePictureInfoRepository;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+@Deprecated
 public class MakeThumbnails {
 
 	private static final int SIZE = 160;
 
 	public static void main(String[] args) throws IOException, FileIsDirectoryException {
 
-		PictureInfoRepository infoRepository = PictureInfoRepository.getRepository();
-		PictureRepository picRepository = PictureRepository.getRepository();
-		generateThumbnails(infoRepository, picRepository);
+		PictureInfoRepository infoRepository = FilePictureInfoRepository.getRepository();
+		generateThumbnails(infoRepository);
 
-		PictureInfoRepository tmpInfoRepository = PictureInfoRepository.getTmpRepository();
-		PictureRepository tmpPicRepository = PictureRepository.getTmpRepository();
-		generateThumbnails(tmpInfoRepository, tmpPicRepository);
+		PictureInfoRepository tmpInfoRepository = FilePictureInfoRepository.getTmpRepository();
+		generateThumbnails(tmpInfoRepository);
 
 	}
 
-	private static void generateThumbnails(PictureInfoRepository infoRepository, PictureRepository picRepository)
+	private static void generateThumbnails(PictureInfoRepository infoRepository)
 			throws IOException, FileNotFoundException, FileIsDirectoryException {
 		List<String> folderBaseList = infoRepository.getTagList();
 
 		for (String folderBase : folderBaseList) {
-			List<PictureInfo> infoList = infoRepository.getPictureInfos(folderBase);
+			Collection<PictureInfo> infoList = infoRepository.getPictureInfos(folderBase).values();
 			for (PictureInfo info : infoList) {
 				System.out.println(info.getFileId());
-				Path path = picRepository.getPath(info.getFileId());
+				PathGenerator pGen = new PathGenerator(info.getFileId(), info.isTemporary());
+				Path path = pGen.getPath();
 
 				try {
 					
@@ -59,7 +61,7 @@ public class MakeThumbnails {
 					Imgproc.resize(im, thumb, new Size(scaledHeight, scaledWidth), scaledWidth / width, scaledHeight / height, Imgproc.INTER_LANCZOS4);
 					im.release();
 					
-					Path thumbPath = picRepository.getThumbnailPath(info.getFileId());
+					Path thumbPath = pGen.getThumbnailPath();
 					if (!Files.exists(thumbPath.getParent())) {
 						Files.createDirectories(thumbPath.getParent());
 					}

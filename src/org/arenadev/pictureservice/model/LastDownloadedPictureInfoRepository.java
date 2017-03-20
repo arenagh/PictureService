@@ -2,34 +2,35 @@ package org.arenadev.pictureservice.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LastDownloadedPictureInfoRepository {
 
 	private static LastDownloadedPictureInfoRepository repository = new LastDownloadedPictureInfoRepository();
 	
-	private List<PictureInfo> lastDownloadList;
+	private Map<String, PictureInfo> lastDownloads;
 	
 	private LastDownloadedPictureInfoRepository() {
 		
-		lastDownloadList = Collections.synchronizedList(new ArrayList<>());
+		lastDownloads = Collections.synchronizedMap(new HashMap<>());
 	}
 
 	public static LastDownloadedPictureInfoRepository getRepository() {
 		return repository;
 	}
 	
-	public synchronized List<PictureInfo> getPictureInfoList() {
-		
-		return new ArrayList<>(lastDownloadList);
+	public synchronized Map<String, PictureInfo> getPictureInfoList() {
+		return new HashMap<>(lastDownloads);
 	}
 	
-	public synchronized void addPictureInfo(PictureInfo info) {
-		lastDownloadList.add(info);
+	public synchronized void addPictureInfo(String id, PictureInfo info) {
+		lastDownloads.put(id, info);
 	}
 	
 	public synchronized void clear() {
-		lastDownloadList.clear();
+		lastDownloads.clear();
 	}
 	
 	

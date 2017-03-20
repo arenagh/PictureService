@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.arenadev.pictureservice.repository.file.FilePictureInfoRepository;
+import org.arenadev.pictureservice.repository.file.FilePictureRepository;
 import org.opencv.core.CvException;
 
 public class MetafileGenerator {
@@ -32,11 +33,11 @@ public class MetafileGenerator {
 	private volatile int progress = 0;
 	
 	private MetafileGenerator() {
-		infoRepository = PictureInfoRepository.getRepository();
-		picRepository = PictureRepository.getRepository();
+		infoRepository = FilePictureInfoRepository.getRepository();
+		picRepository = FilePictureRepository.getRepository();
 
-		tmpInfoRepository = PictureInfoRepository.getTmpRepository();
-		tmpPicRepository = PictureRepository.getTmpRepository();
+		tmpInfoRepository = FilePictureInfoRepository.getTmpRepository();
+		tmpPicRepository = FilePictureRepository.getTmpRepository();
 	}
 
 	public static MetafileGenerator getGenerator() {
@@ -93,13 +94,13 @@ public class MetafileGenerator {
 		for (String tag : tagList) {
 			try {
 				infoRepo.loadPictureInfoList(tag);
-				List<PictureInfo> pictureInfoListFromMeta = infoRepo.getPictureInfos(tag);
+				List<PictureInfo> pictureInfoListFromMeta = new ArrayList<>(infoRepo.getPictureInfos(tag).values());
 				
 				List<Path> dirList = getChildList(Files.newDirectoryStream(picRepo.getRoot(), tag + "*"));
 				
 				List<PictureInfo> pictureInfoListFromImage = new ArrayList<>();
 				for (Path dir : dirList) {
-					pictureInfoListFromImage.addAll(getChildList(Files.newDirectoryStream(dir)).stream().filter(p -> PictureInfo.isPictureFile(p.toString())).map(p -> genPictureInfo(p, tag)).filter(p -> !pictureInfoListFromMeta.contains(p)).collect(Collectors.toList()));
+					pictureInfoListFromImage.addAll(getChildList(Files.newDirectoryStream(dir)).stream().filter(p -> PictureInfo.isPictureFile(p)).map(p -> genPictureInfo(p, tag)).filter(p -> !pictureInfoListFromMeta.contains(p)).collect(Collectors.toList()));
 					System.out.println(String.format("dir:%s, file count:%d", dir.toString(), pictureInfoListFromImage.size()));
 				}
 				pictureInfoMapFromMeta.put(tag, pictureInfoListFromMeta);
@@ -124,7 +125,7 @@ public class MetafileGenerator {
 						if (pInfo.getTagList().size() == 0) {
 							pInfo.addTag(tag);
 						}
-						infoRepo.addPictureInfo(tag, pInfo);
+						infoRepo.addPictureInfo(tag, pInfo.getFileId(), pInfo);
 					} catch (CvException e) {
 						System.out.println(String.format("invalid file(fileID):%s skipped...", pInfo.getFileId()));
 					}
@@ -155,13 +156,13 @@ public class MetafileGenerator {
 		for (String tag : tagList) {
 			try {
 				infoRepo.loadPictureInfoList(tag);
-				pictureInfoMap.put(tag, infoRepo.getPictureInfos(tag).stream().collect(Collectors.toMap(PictureInfo::getFileId, Function.identity())));
+				pictureInfoMap.put(tag, infoRepo.getPictureInfos(tag));
 				
 				List<Path> dirList = getChildList(Files.newDirectoryStream(picRepo.getRoot(), tag + "*"));
 				List<Path> pathList = new ArrayList<>();
 				
 				for (Path dir : dirList) {
-					pathList.addAll(getChildList(Files.newDirectoryStream(dir)).stream().filter(p -> PictureInfo.isPictureFile(p.toString())).collect(Collectors.toList()));
+					pathList.addAll(getChildList(Files.newDirectoryStream(dir)).stream().filter(p -> PictureInfo.isPictureFile(p)).collect(Collectors.toList()));
 				}
 				pathMap.put(tag, pathList);
 			} catch (IOException e) {
@@ -180,7 +181,7 @@ public class MetafileGenerator {
 			Map<String, PictureInfo> tagPictureInfoMap = pictureInfoMap.get(tag);
 			try {
 				for (Path path : entry.getValue()) {
-					String fileId = PictureRepository.getFileId(path);
+					String fileId = FilePictureRepository.getFileId(path);
 					PictureInfo newInfo = null;
 					
 					try {
@@ -199,7 +200,7 @@ public class MetafileGenerator {
 							newInfo = genPictureInfo(path, tag);
 						}
 						newInfo.setPHash(geom.getPHash(path));
-						infoRepo.addPictureInfo(tag, newInfo);
+						infoRepo.addPictureInfo(tag, newInfo.getFileId(), newInfo);
 					} catch (CvException e) {
 						System.out.println(String.format("invalid file(fileID):%s skipped...", fileId));
 					}
@@ -227,7 +228,7 @@ public class MetafileGenerator {
 	
 	private PictureInfo genPictureInfo(Path path, String tag) {
 
-		String fileId = PictureRepository.getFileId(path);
+		String fileId = FilePictureRepository.getFileId(path);
 
 		Instant time = null;
 		BasicFileAttributes attrs;
@@ -263,7 +264,7 @@ public class MetafileGenerator {
 		for (String tag : tagList) {
 			try {
 				infoRepo.loadPictureInfoList(tag);
-				infoRepo.getPictureInfos(tag).stream().filter(p -> p.getTagList().size() == 0).forEach(p -> p.addTag(tag));
+				infoRepo.getPictureInfos(tag).values().stream().filter(p -> p.getTagList().size() == 0).forEach(p -> p.addTag(tag));
 				infoRepo.store(tag);
 			} catch (IOException e) {
 			}
@@ -284,7 +285,7 @@ public class MetafileGenerator {
 		for (String tag : tagList) {
 			try {
 				infoRepo.loadPictureInfoList(tag);
-				infoRepo.getPictureInfos(tag).stream().filter(p -> p.getTagList().size() == 0).forEach(p -> p.setTemporary(tmp));
+				infoRepo.getPictureInfos(tag).values().stream().filter(p -> p.getTagList().size() == 0).forEach(p -> p.setTemporary(tmp));
 				infoRepo.store(tag);
 			} catch (IOException e) {
 			}

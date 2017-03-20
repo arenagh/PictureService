@@ -4,27 +4,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.opencv.core.CvException;
 
 public class ThumbnailGenerator {
 	
 	private static ThumbnailGenerator thumbnailGenerator = new ThumbnailGenerator();
 	
+	@Inject
+	private RepositoryFactory repoFactory;
+	
 	private PictureInfoRepository infoRepository;
-	private PictureRepository picRepository;
 
 	private PictureInfoRepository tmpInfoRepository;
-	private PictureRepository tmpPicRepository;
 	
 	private boolean running = false;
 	private int progress = 0;
 	
 	private ThumbnailGenerator() {
-		infoRepository = PictureInfoRepository.getRepository();
-		picRepository = PictureRepository.getRepository();
+		infoRepository = repoFactory.getPictureInfoRepository();
 
-		tmpInfoRepository = PictureInfoRepository.getTmpRepository();
-		tmpPicRepository = PictureRepository.getTmpRepository();
+		tmpInfoRepository = repoFactory.getTmpPictureInfoRepository();
 	}
 
 	public static ThumbnailGenerator getGenerator() {
@@ -46,17 +47,19 @@ public class ThumbnailGenerator {
 		
 		List<PictureInfo> totalInfo = new ArrayList<>();
 		for (String tag : infoRepository.getTagList()) {
-			totalInfo.addAll(infoRepository.getPictureInfos(tag));
+			totalInfo.addAll(infoRepository.getPictureInfos(tag).values());
 		}
 		for (String tag : tmpInfoRepository.getTagList()) {
-			totalInfo.addAll(tmpInfoRepository.getPictureInfos(tag));
+			totalInfo.addAll(tmpInfoRepository.getPictureInfos(tag).values());
 		}
 		int totalCount = totalInfo.size();
 		
 		int count = 0;
 		for (PictureInfo info : totalInfo) {
 			try {
-				PictureMagnifier.getMaker().makeThumbnail(info, picRepository);
+				PathGenerator pGen = new PathGenerator(info.getFileId(), info.isTemporary());
+				PictureMagnifier.getMaker().makeThumbnail(info, pGen.getPath(), pGen.getThumbnailPath());
+				// TODO store picture file info
 			} catch (CvException e) {
 				System.out.println(String.format("Thumbnail generation failed(fileID):%s", info.getFileId()));
 			}
