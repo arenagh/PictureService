@@ -58,7 +58,7 @@ public class ElasticSearchDataFileGenerator {
 		
 		List<PictureInfo> infos = new ArrayList<>();
 		for (String tag : infoRepo.getTagList()) {
-			infos.addAll(infoRepo.getPictureInfos(tag));
+			infos.addAll(infoRepo.getPictureInfos(tag).values());
 		}
 		
 		List<String> result = new ArrayList<>();

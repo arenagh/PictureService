@@ -9,5 +9,7 @@ public interface PictureRepository {
 	Path getThumbnailPath(String id);
 
 	Path getRoot();
+	
+	void registPicture(String id, Path pic, Path thumbnail);
 
 }

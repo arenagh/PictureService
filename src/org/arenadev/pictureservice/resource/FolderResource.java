@@ -3,7 +3,6 @@ package org.arenadev.pictureservice.resource;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -14,6 +13,7 @@ import javax.ws.rs.PathParam;
 import org.arenadev.pictureservice.model.Downloader;
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
 import org.arenadev.pictureservice.model.LastDownloadedPictureInfoRepository;
+import org.arenadev.pictureservice.model.PathGenerator;
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureMagnifier;
@@ -42,21 +42,21 @@ public class FolderResource {
 					continue;
 				}
 				try {
-					String decodedLine = URLDecoder.decode(urlLine, "UTF-8");
-					int startPos = decodedLine.lastIndexOf('/') + 1;
-					int endPos = decodedLine.indexOf('?', startPos);
-					String filename = endPos < 0 ? decodedLine.substring(startPos) : decodedLine.substring(startPos, endPos);
-					if (!PictureInfo.isPictureFile(filename)) {
+					PathGenerator pGen = new PathGenerator(folder, urlLine, true);
+					
+					if (!PictureInfo.isPictureFile(pGen.getPath())) {
 						continue;
 					}
-					String fileId = String.format("%s/%s", folder, filename);
-					java.nio.file.Path path = pRepository.getPath(fileId);
+					
 					URI uri = new URI(urlLine);
-					PictureInfo info = Downloader.downloadFile(path, uri, folder);
-					PictureMagnifier.getMaker().makeThumbnail(info, pRepository);
-					infoRepository.addPictureInfo(folder, info);
+					PictureInfo info = Downloader.downloadFile(pGen.getPath(), uri, folder);
+					
+					PictureMagnifier.getMaker().makeThumbnail(info, pGen.getPath(), pGen.getThumbnailPath());
+					
+					infoRepository.addPictureInfo(folder, pGen.getID(), info);
 					infoRepository.store(folder);
-					dRepository.addPictureInfo(info);
+					pRepository.registPicture(pGen.getID(), pGen.getPath(), pGen.getThumbnailPath());
+					dRepository.addPictureInfo(pGen.getID(), info);
 				} catch (URISyntaxException | IOException | FileIsDirectoryException | CvException e) {
 					continue;
 				}

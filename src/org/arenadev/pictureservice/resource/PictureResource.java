@@ -2,6 +2,7 @@ package org.arenadev.pictureservice.resource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -49,6 +50,9 @@ public class PictureResource {
 		ResponseBuilder result;
 		try {
 			java.nio.file.Path path = repository.getPath(id);
+			if ((path == null) || (!Files.exists(path))) {
+				Response.status(Status.NOT_FOUND).build();
+			}
 			
 			Object contents = path.toFile();
 			

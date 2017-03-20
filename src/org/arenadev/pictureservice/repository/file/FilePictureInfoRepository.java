@@ -5,11 +5,11 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.arenadev.pictureservice.model.PictureInfo;
@@ -29,8 +29,8 @@ public class FilePictureInfoRepository implements PictureInfoRepository {
 	private static final List<String> TMP_TAG_LIST = Arrays.asList("e", "man", "ner", "test");
 	private static final String TMP_CURRENT_SUFFIX = "";
 	
-	private static PictureInfoRepository pictureInfoRepository = new FilePictureInfoRepository(TAG_LIST, CURRENT_SUFFIX, System.getenv("PICTURE_META_ROOT"));
-	private static PictureInfoRepository tmpInfoRepository = new FilePictureInfoRepository(TMP_TAG_LIST, TMP_CURRENT_SUFFIX, System.getenv("PICTURE_TMP_META_ROOT"));
+	private static PictureInfoRepository pictureInfoRepository = new FilePictureInfoRepository(TAG_LIST, CURRENT_SUFFIX, System.getenv("PICTURE_META_ROOT"), false);
+	private static PictureInfoRepository tmpInfoRepository = new FilePictureInfoRepository(TMP_TAG_LIST, TMP_CURRENT_SUFFIX, System.getenv("PICTURE_TMP_META_ROOT"), true);
 
 	private ObjectMapper mapper;
 	
@@ -39,11 +39,13 @@ public class FilePictureInfoRepository implements PictureInfoRepository {
 	private List<String> tagList;
 	private String currentSuffix;
 	
-	private Map<String, List<PictureInfo>> infoMap;
+	private Map<String, Map<String, PictureInfo>> infoMap;
+	
+	private boolean temporary;
 	
 	protected FilePictureInfoRepository() {}
 	
-	private FilePictureInfoRepository(List<String> tags, String suffix, String mRoot) {
+	private FilePictureInfoRepository(List<String> tags, String suffix, String mRoot, boolean tmp) {
 		
 		FileSystem fs = FileSystems.getDefault();
 		
@@ -61,11 +63,12 @@ public class FilePictureInfoRepository implements PictureInfoRepository {
 			try {
 				loadPictureInfoList(tag);
 			} catch (IOException e) {
-				infoMap.put(tag, new ArrayList<>());
+				infoMap.put(tag, new HashMap<>());
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		temporary =tmp;
 	}
 
 	public static PictureInfoRepository getRepository() {
@@ -88,20 +91,20 @@ public class FilePictureInfoRepository implements PictureInfoRepository {
 
 		Path meta = metaRoot.resolve(tag);
 		if (!Files.exists(meta)) {
-			infoMap.put(tag, new ArrayList<>());
+			infoMap.put(tag, new HashMap<>());
 			return;
 		}
 		
 		List<String> lines = Files.readAllLines(meta);
-		List<PictureInfo> list = lines.stream().map(l -> l.trim()).filter(l -> !l.isEmpty()).map(this::unmarshall).collect(Collectors.toList());
-		infoMap.put(tag, list);
+		Map<String, PictureInfo> map = lines.stream().map(l -> l.trim()).filter(l -> !l.isEmpty()).map(this::unmarshall).collect(Collectors.toMap(p -> p.getFileId(), Function.identity()));
+		infoMap.put(tag, map);
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.arenadev.pictureservice.model.PictureInfoRepository#getPictureInfos(java.lang.String)
 	 */
 	@Override
-	public List<PictureInfo> getPictureInfos(String tag) {
+	public Map<String, PictureInfo> getPictureInfos(String tag) {
 		return infoMap.get(tag);
 	}
 	
@@ -138,8 +141,8 @@ public class FilePictureInfoRepository implements PictureInfoRepository {
 	 * @see org.arenadev.pictureservice.model.PictureInfoRepository#addPictureInfo(java.lang.String, org.arenadev.pictureservice.model.PictureInfo)
 	 */
 	@Override
-	public void addPictureInfo(String tag, PictureInfo info) {
-		infoMap.get(tag).add(info);
+	public void addPictureInfo(String tag, String id, PictureInfo info) {
+		infoMap.get(tag).put(info.getFileId(), info);
 	}
 
 	/* (non-Javadoc)
@@ -148,10 +151,10 @@ public class FilePictureInfoRepository implements PictureInfoRepository {
 	@Override
 	public void store(String tag) throws IOException { // metaファイルがtag別なのは便宜上
 
-		List<PictureInfo> pictureInfoList = getPictureInfos(tag);
+		Map<String, PictureInfo> pictureInfoList = getPictureInfos(tag);
 		
 		if (pictureInfoList.size() > 0) {
-			List<String> lines = pictureInfoList.stream().map(this::marshall).collect(Collectors.toList());
+			List<String> lines = pictureInfoList.values().stream().map(this::marshall).collect(Collectors.toList());
 			Path meta = metaRoot.resolve(tag);
 			Files.write(meta, lines);
 		}
@@ -163,6 +166,11 @@ public class FilePictureInfoRepository implements PictureInfoRepository {
 	@Override
 	public void removePictureInfo(String tag, PictureInfo info) {
 		infoMap.get(tag).remove(info);
+	}
+
+	@Override
+	public boolean isTemporary() {
+		return temporary;
 	}
 }
  

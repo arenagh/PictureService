@@ -59,4 +59,9 @@ public class FilePictureRepository implements PictureRepository {
 		return String.format("%s/%s", folderName, filename);
 	}
 
+	@Override
+	public void registPicture(String id, Path pic, Path thumbnail) {
+		// do nothing
+	}
+
 }

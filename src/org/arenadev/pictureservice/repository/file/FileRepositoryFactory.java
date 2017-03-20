@@ -1,12 +1,13 @@
 package org.arenadev.pictureservice.repository.file;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 
 import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureRepository;
 import org.arenadev.pictureservice.model.RepositoryFactory;
 
-@RequestScoped
+@FileRepository
+@ApplicationScoped
 public class FileRepositoryFactory implements RepositoryFactory {
 	
 	public FileRepositoryFactory() {

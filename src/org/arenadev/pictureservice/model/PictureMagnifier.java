@@ -61,10 +61,9 @@ public class PictureMagnifier {
 		
 	}
 
-	public void makeThumbnail(PictureInfo info, PictureRepository pRepository) throws FileIsDirectoryException, IOException, CvException {
+	public Path makeThumbnail(PictureInfo info, Path picPath, Path thumbPath) throws FileIsDirectoryException, IOException, CvException {
 
-		Mat thumb = magnify(pRepository.getPath(info.getFileId()), SIZE, SIZE);
-		Path thumbPath = pRepository.getThumbnailPath(info.getFileId());
+		Mat thumb = magnify(picPath, SIZE, SIZE);
 		
 		if (!Files.exists(thumbPath.getParent())) {
 			Files.createDirectories(thumbPath.getParent());
@@ -72,6 +71,8 @@ public class PictureMagnifier {
 		
 		Imgcodecs.imwrite(thumbPath.toString(), thumb);
 		thumb.release();
+		
+		return thumbPath;
 		
 	}
 

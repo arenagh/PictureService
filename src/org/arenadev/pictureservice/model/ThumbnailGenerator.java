@@ -16,20 +16,16 @@ public class ThumbnailGenerator {
 	private RepositoryFactory repoFactory;
 	
 	private PictureInfoRepository infoRepository;
-	private PictureRepository picRepository;
 
 	private PictureInfoRepository tmpInfoRepository;
-	private PictureRepository tmpPicRepository;
 	
 	private boolean running = false;
 	private int progress = 0;
 	
 	private ThumbnailGenerator() {
 		infoRepository = repoFactory.getPictureInfoRepository();
-		picRepository = repoFactory.getTmpPictureRepository();
 
 		tmpInfoRepository = repoFactory.getTmpPictureInfoRepository();
-		tmpPicRepository = repoFactory.getTmpPictureRepository();
 	}
 
 	public static ThumbnailGenerator getGenerator() {
@@ -51,17 +47,19 @@ public class ThumbnailGenerator {
 		
 		List<PictureInfo> totalInfo = new ArrayList<>();
 		for (String tag : infoRepository.getTagList()) {
-			totalInfo.addAll(infoRepository.getPictureInfos(tag));
+			totalInfo.addAll(infoRepository.getPictureInfos(tag).values());
 		}
 		for (String tag : tmpInfoRepository.getTagList()) {
-			totalInfo.addAll(tmpInfoRepository.getPictureInfos(tag));
+			totalInfo.addAll(tmpInfoRepository.getPictureInfos(tag).values());
 		}
 		int totalCount = totalInfo.size();
 		
 		int count = 0;
 		for (PictureInfo info : totalInfo) {
 			try {
-				PictureMagnifier.getMaker().makeThumbnail(info, picRepository);
+				PathGenerator pGen = new PathGenerator(info.getFileId(), info.isTemporary());
+				PictureMagnifier.getMaker().makeThumbnail(info, pGen.getPath(), pGen.getThumbnailPath());
+				// TODO store picture file info
 			} catch (CvException e) {
 				System.out.println(String.format("Thumbnail generation failed(fileID):%s", info.getFileId()));
 			}

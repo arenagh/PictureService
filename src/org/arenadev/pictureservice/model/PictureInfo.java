@@ -2,6 +2,7 @@ package org.arenadev.pictureservice.model;
 
 import java.math.BigInteger;
 import java.net.URI;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,8 +74,8 @@ public class PictureInfo {
 		return new PictureInfo(fileId, newSource, newCreatedTime, newDownloadedTime, newPicSize, newFileSize, newRef, newTmp, tagList.toArray(new String[0]));
 	}
 
-	public static boolean isPictureFile(String filename) {
-		String filenameToLower = filename.toLowerCase();
+	public static boolean isPictureFile(Path file) {
+		String filenameToLower = file.getFileName().toString().toLowerCase();
 		return PICTURE_EXTENTION.stream().anyMatch(e -> filenameToLower.endsWith(e));
 	}
 	
