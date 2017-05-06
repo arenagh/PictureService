@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -18,9 +20,13 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientConfig;
 
+@Singleton
 public class Downloader {
 	
-	public static PictureInfo downloadFile(Path path, URI uri, String folder) throws IOException {
+	@Inject
+	private RequestModifierMapper mapper;
+	
+	public PictureInfo downloadFile(Path path, URI uri, String folder) throws IOException {
 		
 		String urlFilename = path.getFileName().toString();
 
@@ -34,7 +40,7 @@ public class Downloader {
 		ClientConfig config = new ClientConfig();
 		
 		Client client = ClientBuilder.newClient(config);
-		InvocationBuilderGenerator transformer = UriTransformerFactory.getInstance().getTransformer(uri);
+		InvocationBuilderGenerator transformer = mapper.getUriTransformer(uri);
 		Invocation.Builder invocationBuilder = transformer.generate(client, uri);
 		Response response = invocationBuilder.get();
 		Path downloadedFile = response.readEntity(File.class).toPath();
