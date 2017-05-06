@@ -23,6 +23,8 @@ import org.glassfish.jersey.client.ClientConfig;
 @Singleton
 public class Downloader {
 	
+	private static final Pattern FILE_SUFFIX_PATTERN = Pattern.compile("_[0-9]+$");
+	
 	@Inject
 	private RequestModifierMapper mapper;
 	
@@ -63,14 +65,14 @@ public class Downloader {
 		String stripped = filename.substring(0, filename.lastIndexOf('.'));
 		String ext = filename.substring(filename.lastIndexOf('.'));
 		
-		Matcher matcher = Pattern.compile("\\([0-9]+\\)$").matcher(stripped);
+		Matcher matcher = FILE_SUFFIX_PATTERN.matcher(stripped);
 		StringBuilder builder = new StringBuilder();
 		if (matcher.find()) {
-			String base = stripped.substring(matcher.start());
-			int num = Integer.parseInt(stripped.substring(matcher.start() + 1, matcher.end()));
-			builder.append(base).append('(').append(num + 1).append(')').append(ext);
+			String base = stripped.substring(0, matcher.start());
+			int num = Integer.parseInt(stripped.substring(matcher.start() + 1));
+			builder.append(base).append('_').append(num + 1).append(ext);
 		} else {
-			builder.append(stripped).append("(1)").append(ext);
+			builder.append(stripped).append("_1").append(ext);
 		}
 		return builder.toString();
 	}
