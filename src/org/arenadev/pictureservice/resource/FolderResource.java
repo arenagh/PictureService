@@ -54,6 +54,9 @@ public class FolderResource {
 					URI uri = new URI(urlLine);
 					PictureInfo info = downloader.downloadFile(pGen.getPath(), uri, folder);
 					
+					// replace pGen by actual fileId
+					pGen = new PathGenerator(info.getFileId(), true);
+					
 					PictureMagnifier.getMaker().makeThumbnail(info, pGen.getPath(), pGen.getThumbnailPath());
 					
 					infoRepository.addPictureInfo(folder, pGen.getID(), info);
@@ -69,3 +72,4 @@ public class FolderResource {
 	}
 	
 }
+;
