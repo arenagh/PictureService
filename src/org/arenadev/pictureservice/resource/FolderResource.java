@@ -26,6 +26,9 @@ public class FolderResource {
 
 	@Inject
 	private RepositoryFactory repoFactory;
+	
+	@Inject
+	private Downloader downloader;
 
 	@POST
 	@Path("download_tmp/{folder}")
@@ -49,7 +52,7 @@ public class FolderResource {
 					}
 					
 					URI uri = new URI(urlLine);
-					PictureInfo info = Downloader.downloadFile(pGen.getPath(), uri, folder);
+					PictureInfo info = downloader.downloadFile(pGen.getPath(), uri, folder);
 					
 					PictureMagnifier.getMaker().makeThumbnail(info, pGen.getPath(), pGen.getThumbnailPath());
 					

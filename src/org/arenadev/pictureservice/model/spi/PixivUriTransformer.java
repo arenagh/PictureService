@@ -43,7 +43,8 @@ public class PixivUriTransformer extends SimpleInvocationBuilderGenerator implem
 
 	@Override
 	public boolean canAdapted(URI uri) {
-		return uri.getHost().endsWith("pixiv.net");
+		String host = uri.getHost();
+		return (host.endsWith("pixiv.net")) || (host.endsWith("pximg.net"));
 	}
 
 }
