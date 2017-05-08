@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.arenadev.pictureservice.model.InvocationBuilderGenerator;
 import org.arenadev.pictureservice.model.RequestModifierMapper;
+import org.arenadev.pictureservice.model.SimpleInvocationBuilderGenerator;
 
 public class RequestModifierMapperSpi implements RequestModifierMapper {
 
@@ -13,7 +14,7 @@ public class RequestModifierMapperSpi implements RequestModifierMapper {
 	
 	@Override
 	public InvocationBuilderGenerator getUriTransformer(URI uri) {
-		return transformerList.stream().filter(t -> t.canAdapted(uri)).findFirst().orElse(null);
+		return transformerList.stream().filter(t -> t.canAdapted(uri)).map(t -> (InvocationBuilderGenerator) t).findFirst().orElse(new SimpleInvocationBuilderGenerator());
 	}
 
 }
