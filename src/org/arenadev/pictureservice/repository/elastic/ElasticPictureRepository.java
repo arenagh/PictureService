@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.arenadev.pictureservice.model.PictureRepository;
+import org.arenadev.pictureservice.util.ObjectMapperFactory;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -35,9 +36,7 @@ public class ElasticPictureRepository implements PictureRepository {
 
 		temporary = tmp;
 		
-		mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
-		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		mapper = ObjectMapperFactory.newObjectMapper();
 	}
 	
 	public static void setTransportClient(TransportClient c, boolean tmp) {

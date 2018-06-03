@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
@@ -28,36 +29,44 @@ public class Downloader {
 	@Inject
 	private RequestModifierMapper mapper;
 	
-	public PictureInfo downloadFile(Path path, URI uri, String folder) throws IOException {
+	public PictureInfo downloadFile(Path path, URI uri, String folder) throws DownloadException {
 		
-		String urlFilename = path.getFileName().toString();
-
 		Path dest = path;
-		String name = urlFilename;
+		String name = path.getFileName().toString();
 		while (Files.exists(dest)) {
 			name = altName(name);
 			dest = dest.getParent().resolve(name);
 		}
 		
-		ClientConfig config = new ClientConfig();
-		
-		Client client = ClientBuilder.newClient(config);
-		InvocationBuilderGenerator transformer = mapper.getUriTransformer(uri);
-		Invocation.Builder invocationBuilder = transformer.generate(client, uri);
-		Response response = invocationBuilder.get();
-		Path downloadedFile = response.readEntity(File.class).toPath();
-		
-		Date date = response.getLastModified();
-		Instant timestamp = (date != null) ? date.toInstant() : Optional.ofNullable(response.getDate()).map(d -> d.toInstant()).orElse(Instant.now());
-		
-		Files.move(downloadedFile, dest);
-		
-		PictureGeometry geometrer = PictureGeometry.getGeometrer();
-		
-		PictureInfo info = PictureInfo.getPictureInfo(String.format("%s/%s", folder, name), uri, timestamp, Instant.now(), geometrer.getPictureSize(dest), geometrer.getFileSize(dest), transformer.getReferer(), folder);
-		info.setPHash(geometrer.getPHash(dest));
+		Path downloadedFile = null;
+		try {
+			ClientConfig config = new ClientConfig();
+			
+			Client client = ClientBuilder.newClient(config);
+			InvocationBuilderGenerator transformer = mapper.getUriTransformer(uri);
+			Invocation.Builder invocationBuilder = transformer.generate(client, uri);
+			Response response = invocationBuilder.get();
+			downloadedFile = response.readEntity(File.class).toPath();
+			
+			Date date = response.getLastModified();
+			Instant timestamp = (date != null) ? date.toInstant() : Optional.ofNullable(response.getDate()).map(d -> d.toInstant()).orElse(Instant.now());
+			
+			Files.move(downloadedFile, dest);
+			
+			PictureGeometry geometrer = PictureGeometry.getGeometrer();
+			
+			PictureInfo info = PictureInfo.getPictureInfo(String.format("%s/%s", folder, name), uri, timestamp, Instant.now(), geometrer.getPictureSize(dest), geometrer.getFileSize(dest), transformer.getReferer(), folder);
+			info.setPHash(geometrer.getPHash(dest));
 
-		return info;
+			return info;
+		} catch (ProcessingException e) { // communication failure
+			throw new DownloadException(e, dest, uri);
+		} catch (IOException e) { // file moving failure
+			throw new DownloadException("file move fail:" + downloadedFile.toString(), e, dest, uri);
+		} catch (GeometryException e) { // picture or file size, PHash miss
+			throw new DownloadException(e, dest, uri);
+		}
+		
 	}
 
 	private static String altName(String filename) {

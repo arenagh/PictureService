@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
+import org.arenadev.pictureservice.util.ObjectMapperFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,9 +55,7 @@ public class FilePictureInfoRepository implements PictureInfoRepository {
 		tagList = tags;
 		currentSuffix = suffix;
 		
-		mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
-		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		mapper = ObjectMapperFactory.newObjectMapper();
 		
 		infoMap = new HashMap<>();
 		for (String tag : tagList) {

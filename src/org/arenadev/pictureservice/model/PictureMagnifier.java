@@ -26,47 +26,59 @@ public class PictureMagnifier {
 		return maker;
 	}
 	
-	public Mat magnify(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException, CvException {
+	public Mat magnify(Path path, Integer targetWidth, Integer targetHeight) throws MagnifyException {
 		
-		Mat im = PictureReader.readPictureFile(path);
+		Mat im = null;
+		try {
+			im = PictureReader.readPictureFile(path);
+		} catch (IOException e) {
+			throw new MagnifyException("file read fail", e, path);
+		}
 		if (im == null) {
-			System.out.println(String.format("skip:%s", path.toString()));
-			return null;
+			throw new MagnifyException("file not read", path);
 		}
 
-		if ((targetWidth == null) && (targetHeight == null)) {
-			return im;
-		}
+		try {
+			if ((targetWidth == null) && (targetHeight == null)) {
+				return im;
+			}
 
-		int width = im.width();
-		int height = im.height();
-		
-		double scale;
-		if (targetWidth == null) {
-			scale = (float) targetHeight / (float) height;
-		} else if (targetHeight == null) {
-			scale = (float) targetWidth / (float) width;
-		} else {
-			scale = Math.min((float) targetWidth / (float) width, (float) targetHeight / (float) height);
+			int width = im.width();
+			int height = im.height();
+			
+			double scale;
+			if (targetWidth == null) {
+				scale = (float) targetHeight / (float) height;
+			} else if (targetHeight == null) {
+				scale = (float) targetWidth / (float) width;
+			} else {
+				scale = Math.min((float) targetWidth / (float) width, (float) targetHeight / (float) height);
+			}
+			
+			double scaledWidth = width * scale;
+			double scaledHeight = height * scale;
+			
+			Mat scaledIm = new Mat((int) scaledHeight, (int) scaledWidth, im.type());
+			Imgproc.resize(im, scaledIm, new Size(scaledWidth, scaledHeight), scale, scale, Imgproc.INTER_LANCZOS4);
+			im.release();
+			
+			return scaledIm;
+		} catch (CvException e) {
+			throw new MagnifyException(e, path);
 		}
-		
-		double scaledWidth = width * scale;
-		double scaledHeight = height * scale;
-		
-		Mat scaledIm = new Mat((int) scaledHeight, (int) scaledWidth, im.type());
-		Imgproc.resize(im, scaledIm, new Size(scaledWidth, scaledHeight), scale, scale, Imgproc.INTER_LANCZOS4);
-		im.release();
-		
-		return scaledIm;
 		
 	}
 
-	public Path makeThumbnail(PictureInfo info, Path picPath, Path thumbPath) throws FileIsDirectoryException, IOException, CvException {
+	public Path makeThumbnail(PictureInfo info, Path picPath, Path thumbPath) throws MagnifyException {
 
 		Mat thumb = magnify(picPath, SIZE, SIZE);
 		
 		if (!Files.exists(thumbPath.getParent())) {
-			Files.createDirectories(thumbPath.getParent());
+			try {
+				Files.createDirectories(thumbPath.getParent());
+			} catch (IOException e) { // directory creation failure
+				throw new MagnifyException("directory creation fail", e, picPath, thumbPath);
+			}
 		}
 		
 		Imgcodecs.imwrite(thumbPath.toString(), thumb);
@@ -76,7 +88,7 @@ public class PictureMagnifier {
 		
 	}
 
-	public BufferedImage magnifyToBufferedImage(Path path, Integer targetWidth, Integer targetHeight) throws FileIsDirectoryException, IOException, CvException {
+	public BufferedImage magnifyToBufferedImage(Path path, Integer targetWidth, Integer targetHeight) throws MagnifyException {
 
 		Mat scaledIm = magnify(path, targetWidth, targetHeight);
 		Mat converted = new Mat(targetHeight, targetWidth, CvType.CV_8UC3);

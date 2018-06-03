@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import org.arenadev.pictureservice.util.ObjectMapperFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ElasticBulkLogAnalysis {
@@ -15,7 +17,7 @@ public class ElasticBulkLogAnalysis {
 		Path logFile = FileSystems.getDefault().getPath(args[0]);
 		List<String> logs = Files.readAllLines(logFile);
 		
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = ObjectMapperFactory.newObjectMapper();
 		
 		for (String json : logs) {
 			Map<String, ?> entry = mapper.readValue(json, Map.class);

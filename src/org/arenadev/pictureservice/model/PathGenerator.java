@@ -21,9 +21,15 @@ public class PathGenerator {
 	private Path path;
 	private Path thumbnailPath;
 	
-	public PathGenerator(String folder, String urlStr, boolean tmp) throws UnsupportedEncodingException {
+	public PathGenerator(String folder, String urlStr, boolean tmp) {
 		
-		String decodedLine = URLDecoder.decode(urlStr, "UTF-8");
+		String decodedLine = urlStr;
+		try {
+			decodedLine = URLDecoder.decode(urlStr, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		int startPos = decodedLine.lastIndexOf('/') + 1;
 		int endPos = decodedLine.indexOf('?', startPos);
 		String filename = endPos < 0 ? decodedLine.substring(startPos) : decodedLine.substring(startPos, endPos);

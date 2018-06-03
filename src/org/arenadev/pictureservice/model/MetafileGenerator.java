@@ -48,7 +48,7 @@ public class MetafileGenerator {
 		return running;
 	}
 
-	public void generate() {
+	public void generate() throws PHashException {
 		synchronized (this) {
 			if (running) {
 				return;
@@ -67,7 +67,7 @@ public class MetafileGenerator {
 		}
 	}
 	
-	public void migrate() {
+	public void migrate() throws GeometryException {
 		synchronized (this) {
 			if (running) {
 				return;
@@ -86,7 +86,7 @@ public class MetafileGenerator {
 		}
 	}
 
-	private void genMetaFiles(PictureInfoRepository infoRepo, PictureRepository picRepo) {
+	private void genMetaFiles(PictureInfoRepository infoRepo, PictureRepository picRepo) throws PHashException {
 		int baseProgress = progress;
 		List<String> tagList = infoRepo.getTagList();
 		Map<String, List<PictureInfo>> pictureInfoMapFromMeta = new HashMap<>();
@@ -148,7 +148,7 @@ public class MetafileGenerator {
 		}
 	}
 	
-	private void migrateMetaFiles(PictureInfoRepository infoRepo, PictureRepository picRepo, boolean tmp) {
+	private void migrateMetaFiles(PictureInfoRepository infoRepo, PictureRepository picRepo, boolean tmp) throws GeometryException {
 		int baseProgress = progress;
 		List<String> tagList = infoRepo.getTagList();
 		Map<String, Map<String, PictureInfo>> pictureInfoMap = new HashMap<>();
@@ -243,6 +243,9 @@ public class MetafileGenerator {
 			size = geom.getFileSize(path);
 			
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GeometryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
