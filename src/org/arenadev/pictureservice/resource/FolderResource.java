@@ -26,6 +26,8 @@ import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureRepository;
 import org.arenadev.pictureservice.model.RepositoryFactory;
+import org.arenadev.pictureservice.resource.urlfilter.URLFilter;
+import org.arenadev.pictureservice.resource.urlfilter.URLFilterSelector;
 
 @Path("folder")
 public class FolderResource {
@@ -35,6 +37,9 @@ public class FolderResource {
 	
 	@Inject
 	private Downloader downloader;
+	
+	@Inject
+	private URLFilterSelector urlFilterSelector;
 	
 	private EventHandler eventHandler = new CommonEventHandler();
 	
@@ -58,13 +63,16 @@ public class FolderResource {
 				Instant start = Instant.now();
 				eventHandler.start(urlLine);
 				try {
-					PathGenerator pGen = new PathGenerator(folder, urlLine, true);
+					URI uri = new URI(urlLine);
+					URLFilter urlFilter = urlFilterSelector.selectURLFilter(uri);
+					uri = urlFilter.normalizeURL(uri);
+					
+					PathGenerator pGen = new PathGenerator(folder, uri.toString(), true);
 					
 					if (!PictureInfo.isPictureFile(pGen.getPath())) {
 						continue;
 					}
 					
-					URI uri = new URI(urlLine);
 					PictureInfo info = downloader.downloadFile(pGen.getPath(), uri, folder);
 					eventHandler.handle(DownloadEvent.suceesEvent(uri, pGen.getPath(), start, Instant.now()));
 					

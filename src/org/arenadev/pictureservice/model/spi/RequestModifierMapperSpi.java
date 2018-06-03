@@ -10,7 +10,7 @@ import org.arenadev.pictureservice.model.SimpleInvocationBuilderGenerator;
 
 public class RequestModifierMapperSpi implements RequestModifierMapper {
 
-	private static List<InvocationBuilderGeneratorSpi> transformerList = Arrays.asList(new PixivUriTransformer(), new NijieUriTransformer());
+	private static List<InvocationBuilderGeneratorSpi> transformerList = Arrays.asList(new PixivUriTransformer(), new NijieUriTransformer(), new TwImgUriTransformer());
 	
 	@Override
 	public InvocationBuilderGenerator getUriTransformer(URI uri) {
