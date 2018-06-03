@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.opencv.core.CvException;
-
 public class ThumbnailGenerator {
 	
 	private static ThumbnailGenerator thumbnailGenerator = new ThumbnailGenerator();
@@ -60,7 +58,7 @@ public class ThumbnailGenerator {
 				PathGenerator pGen = new PathGenerator(info.getFileId(), info.isTemporary());
 				PictureMagnifier.getMaker().makeThumbnail(info, pGen.getPath(), pGen.getThumbnailPath());
 				// TODO store picture file info
-			} catch (CvException e) {
+			} catch (MagnifyException e) {
 				System.out.println(String.format("Thumbnail generation failed(fileID):%s", info.getFileId()));
 			}
 			count++;

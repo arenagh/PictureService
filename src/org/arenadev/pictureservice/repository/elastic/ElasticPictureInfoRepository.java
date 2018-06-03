@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.arenadev.pictureservice.model.PictureInfo;
 import org.arenadev.pictureservice.model.PictureInfoRepository;
+import org.arenadev.pictureservice.util.ObjectMapperFactory;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -32,8 +33,6 @@ public class ElasticPictureInfoRepository implements PictureInfoRepository {
 
 	private ObjectMapper mapper;
 	
-//	private TransportClient client;
-	
 	private List<String> tagList;
 	private boolean temporary;
 	
@@ -47,9 +46,7 @@ public class ElasticPictureInfoRepository implements PictureInfoRepository {
 
 		temporary = tmp;
 		
-		mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
-		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		mapper = ObjectMapperFactory.newObjectMapper();
 	}
 	
 	private void setTagList() {

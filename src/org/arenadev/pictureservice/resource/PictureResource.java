@@ -15,11 +15,11 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
+import org.arenadev.pictureservice.model.MagnifyException;
 import org.arenadev.pictureservice.model.PictureMagnifier;
 import org.arenadev.pictureservice.model.PictureReader;
 import org.arenadev.pictureservice.model.PictureRepository;
 import org.arenadev.pictureservice.model.RepositoryFactory;
-import org.opencv.core.CvException;
 
 @Path("picture")
 public class PictureResource {
@@ -45,7 +45,7 @@ public class PictureResource {
 
 	}
 
-	private Response makeResponceForPicture(String id, PictureRepository repository, Integer width, Integer height) throws IOException {
+	private Response makeResponceForPicture(String id, PictureRepository repository, Integer width, Integer height) {
 		
 		ResponseBuilder result;
 		try {
@@ -62,13 +62,16 @@ public class PictureResource {
 
 			result = Response.ok(contents);
 			result.type(PictureReader.MIME_MAP.getContentType(path.toFile()));
-		} catch(FileNotFoundException e) {
-			throw new WebApplicationException(Status.NOT_FOUND);
-		} catch(FileIsDirectoryException e) {
-			throw new WebApplicationException(e, Response.status(Status.FORBIDDEN).entity(String.format("\"%s\" is a directory.", id)).build());
-		} catch (CvException e) {
+			
+			return result.build();
+		} catch (MagnifyException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof FileNotFoundException) {
+				throw new WebApplicationException(Status.NOT_FOUND);
+			} else if (cause instanceof FileIsDirectoryException) {
+				throw new WebApplicationException(e, Response.status(Status.FORBIDDEN).entity(String.format("\"%s\" is a directory.", id)).build());
+			}
 			throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST).entity(String.format("\"%s\" is a wrong file.", id)).build());
 		}
-		return result.build();
 	}
 }

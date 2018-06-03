@@ -10,6 +10,7 @@ import org.arenadev.pictureservice.model.PictureInfoRepository;
 import org.arenadev.pictureservice.model.PictureRepository;
 import org.arenadev.pictureservice.repository.file.FilePictureInfoRepository;
 import org.arenadev.pictureservice.repository.file.FilePictureRepository;
+import org.arenadev.pictureservice.util.ObjectMapperFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,9 +38,7 @@ public class ElasticSearchDataFileGenerator {
 	
 	public ElasticSearchDataFileGenerator() {
 		
-		mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
-		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		mapper = ObjectMapperFactory.newObjectMapper();
 		
 		infoRepository = FilePictureInfoRepository.getRepository();
 		picRepository = FilePictureRepository.getRepository();

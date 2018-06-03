@@ -16,7 +16,9 @@ import javax.ws.rs.core.Response;
 
 import org.arenadev.pictureservice.migration.ElasticSearchDataFileGenerator;
 import org.arenadev.pictureservice.model.FileIsDirectoryException;
+import org.arenadev.pictureservice.model.GeometryException;
 import org.arenadev.pictureservice.model.MetafileGenerator;
+import org.arenadev.pictureservice.model.PHashException;
 import org.arenadev.pictureservice.model.ThumbnailGenerator;
 
 @Path("admin")
@@ -73,7 +75,12 @@ public class AdminResource {
 			singleThread.execute(new Runnable() {
 				@Override
 				public void run() {
-					mGen.generate();
+					try {
+						mGen.generate();
+					} catch (PHashException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			});
 		}
@@ -97,7 +104,12 @@ public class AdminResource {
 			singleThread.execute(new Runnable() {
 				@Override
 				public void run() {
-					mGen.migrate();
+					try {
+						mGen.migrate();
+					} catch (GeometryException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			});
 		}
