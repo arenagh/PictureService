@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CommonEventHandler extends EventHandler {
 	
-	private static final String LOG_FILE = "/var/log/pictureservice/pictureservice.log"; // TODO to env...
+	private static final String LOG_FILE = System.getenv("PICTURE_LOG") + "/pictureservice.log";
 	
 	ObjectMapper mapper;
 	
